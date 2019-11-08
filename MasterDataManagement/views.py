@@ -726,7 +726,7 @@ def create_schedule_for_commodity_posted(posting_schedule_id):
 
                                     if query_postponed_date.count == 0:
                                         instance_schedule.scheduled_date = date.today() + timedelta(
-                                            days=x.health_commodity.
+                                            days=query_posting_schedule.health_commodity_balance.health_commodity.
                                                      posting_frequency.number_of_days + 2)
                                         instance_schedule.health_commodity_balance_id = query_posting_schedule.health_commodity_balance_id
                                         instance_schedule.save()
@@ -742,7 +742,7 @@ def create_schedule_for_commodity_posted(posting_schedule_id):
 
                                     if query_postponed_date.count == 0:
                                         instance_schedule.scheduled_date = date.today() + timedelta(
-                                            days=x.health_commodity.
+                                            days=query_posting_schedule.health_commodity_balance.health_commodity.
                                                      posting_frequency.
                                                      number_of_days + 1)
                                     instance_schedule.health_commodity_balance_id = query_posting_schedule.health_commodity_balance_id
@@ -794,7 +794,7 @@ def create_schedule_for_commodity_posted(posting_schedule_id):
 
                         if query_postponed_date.count == 0:
                             instance_schedule.scheduled_date = date.today() + timedelta(
-                                days=x.health_commodity.
+                                days=query_posting_schedule.health_commodity_balance.health_commodity.
                                          posting_frequency.
                                          number_of_days + 1)
                             instance_schedule.health_commodity_balance_id = query_posting_schedule.health_commodity_balance_id

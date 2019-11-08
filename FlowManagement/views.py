@@ -421,6 +421,7 @@ def send_thread_message(request):
 
         result = push_service.multiple_devices_data_message(registration_ids=registration_ids,
                                                             data_message=message_payload)
+        print(result)
     return redirect(request.META['HTTP_REFERER'])
 
 
@@ -429,7 +430,7 @@ def trash_email(request):
         item_pk = int(request.POST["item_pk"])
         model_name = (request.POST["model"])
         app_name = (request.POST["app_name"])
-        # origin = (request.POST["origin"])
+        origin = (request.POST["origin"])
 
         model = apps.get_model(app_name, model_name)
 
