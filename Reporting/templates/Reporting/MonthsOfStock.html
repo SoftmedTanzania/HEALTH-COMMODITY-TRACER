@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block content %}
+
+    <div class="app-content content">
+        <div class="content-wrapper">
+            <div class="content-header row mb-1">
+            </div>
+            <div class="content-body">
+                <section id="validation">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title">Months Of Stock Report</h4>
+                                    <a class="heading-elements-toggle"><i class="la la-ellipsis-h font-medium-3"></i></a>
+                                    <div class="heading-elements">
+                                        <ul class="list-inline mb-0">
+                                            <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
+                                            <li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>
+                                            <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                                            <li><a data-action="close"><i class="ft-x"></i></a></li>
+                                        </ul>
+                                    </div>
+
+                                               <div class="col-md-12">
+                                        <div class="col-md-10 col-sm-12">
+                                            <div class="card">
+                                                <div class="card-body">
+
+                                                    <div class="col-md-8">
+                                                        <button type="button" class="btn btn-primary round width-200 buttonAnimation" id="btn_filter" data-animation="pulse" data-toggle="modal" data-backdrop="static" data-target="#modalCategoryMapping">
+                                                            <i class="la la-download"></i> Get Records
+                                                        </button>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+
+                                       <div class="loader-wrapper" id="spinner">
+                                            <div class="loader-container">
+                                                <div class="ball-beat loader-purple">
+                                                    <div></div>
+                                                    <div></div>
+                                                    <div></div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                    <div class="container" id="jasper_server_container"><div></div></div>
+
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script type="text/javascript" src="http://178.79.177.52:8080/jasperserver-pro/client/visualize.js"></script>
+    <script src="https://code.highcharts.com/maps/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/maps/modules/offline-exporting.js"></script>
+    <script>
+
+         $(document).ready(function () {
+
+             $("#spinner").hide();
+
+             $("#btn_filter").on("click", function () {
+
+                 $("#spinner").show();
+
+                 visualize({
+                     auth: {
+                         name: "jasperadmin",
+                         password: "jasperadmin",
+                         organization: "organization_1",
+                     }
+                 }, function (v) {
+
+                     v("#jasper_server_container").report({
+                         resource: "/reports/StockReports/MonthsOfStockReport",
+                         error: function (err) {
+                             alert(err.message);
+                         }
+                     });
+
+
+                     $("#spinner").hide();
+
+                 });
+
+             });
+
+        })
+
+
+    </script>
+
+
+{% endblock %}

@@ -1,0 +1,258 @@
+{% extends 'base.html' %}
+{% load render_table from django_tables2 %}
+{% load crispy_forms_tags %}
+{% load humanize %}
+
+{% block content %}
+
+    <div class="app-content content">
+        <div class="content-wrapper">
+            <div class="content-header row mb-1">
+            </div>
+
+
+            <div class="content-body">
+                <section id="validation">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title">Units</h4>
+                                    <a class="heading-elements-toggle"><i class="la la-ellipsis-h font-medium-3"></i></a>
+                                    <div class="heading-elements">
+                                        <ul class="list-inline mb-0">
+                                            <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
+                                            <li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>
+                                            <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                                            <li><a data-action="close"><i class="ft-x"></i></a></li>
+                                        </ul>
+                                    </div>
+
+                                    <div class="col-md-6 col-sm-12">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <div class="card-body dataTables_wrapper">
+
+                                                    <button type="button" class="btn btn-success round width-200 buttonAnimation" data-animation="pulse" data-toggle="modal" data-backdrop="static" data-target="#modalNewUnit">
+                                                        <i class="la la-plus"></i>Add Frequency
+                                                    </button>
+
+                                                    <div id="table-list">
+                                                        <br />
+
+                                                          <label for="commodity">
+                                                            Search Frequencies:
+                                                        </label>
+                                                        <input type="text" id="search_frequency" class="search form-control round border-primary mb-1" placeholder="Search Unit" />
+
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-4 col-md-6 col-sm-12">
+                                            <div class="form-group">
+                                                <!-- Button trigger modal -->
+
+                                                <!-- Modal -->
+                                                <div class="modal fade text-left" id="modalNewUnit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel70" aria-hidden="true">
+                                                    <div class="modal-dialog" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header modal_header_bg">
+                                                                <h4 class="modal-title text-white" id="myModalLabel70"> New Posting Frequency</h4>
+                                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                    <span aria-hidden="true">&times;</span>
+                                                                </button>
+                                                            </div>
+                                                            <div class="modal-body">
+
+                                                                <form id="form_new_frequency" method = "POST" >
+                                                                    {% csrf_token %}
+
+                                                                    <table>
+
+                                                                        <div class="form-group col-md-10">
+                                                                            <h6>{{ form.frequency_description|as_crispy_field }}</h6>
+                                                                        </div>
+
+                                                                        <div class="form-group col-md-10">
+                                                                            <h6>{{ form.number_of_days|as_crispy_field }}</h6>
+                                                                        </div>
+
+
+                                                                    </table>
+
+
+                                                                </form>
+
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn grey btn-outline-secondary" data-dismiss="modal">Close</button>
+                                                                <button type="button" id="save_new_frequency" class="btn btn-outline-primary">Save changes</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="" id="table_frequencies">
+
+                                        {% render_table table %}
+
+                                    </div>
+
+                                </div>
+
+
+                            </div>
+                        </div>
+                    </div>
+
+                </section>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script>
+        $("#search_frequency").keyup(function () {
+
+            var value = $(this).val();
+
+            $.each($(".table tbody").find("tr"), function () {
+
+                if ($(this).text().toLowerCase().replace(/\s+/g, '').indexOf(value.replace(/\s+/g, '').toLowerCase()) == -1)
+                    $(this).hide();
+                else
+                    $(this).show();
+            });
+
+        });
+
+        $("#save_new_frequency").on("click", function () {
+            var form = $('#form_new_frequency');
+            var url = "{% url 'new_frequency_save' %}";
+
+            var description = document.getElementById("id_frequency_description").value;
+            var time = document.getElementById("id_number_of_days").value;
+
+            if (description == "")
+            {
+                swal("Description missing", "You need to provide a description", "warning");
+            }
+
+            else {
+                if (time == "") {
+                    swal("Time missing", "You need to provide time", "warning");
+                }
+                else {
+
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        data: form.serialize(),
+                        success: function (data) {
+
+                            $('#table_frequencies').load(location.href + ' #table_frequencies');
+
+                            {#                            $('#modalNewUnit').modal('toggle');#}
+
+                            $('#form_new_frequency')[0].reset();
+
+                            swal("Success!", "New Frequency added!", "success");
+
+
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+
+                            swal("Error!", "Adding Frequency failed!", "error");
+
+                        }
+                    });
+
+                    e.preventDefault(); // avoid to execute the actual submit of the form.
+
+                }
+            }
+
+        });
+
+
+        $('.btn_delete').on("click", function(event)
+        {
+            var id = $(this).attr('id');
+            var model = "PostingFrequency";
+            var app_name = "MasterDataManagement";
+            var url = "{% url 'disable_item' %}";
+
+
+            swal({
+                title: "Are you sure?",
+                text: "Deleted frequency is not recoverable.",
+                icon: "warning",
+                buttons: [
+                    'No, cancel it!',
+                    'Yes, I am sure!'
+                ],
+                dangerMode: true,
+            }).then(function(isConfirm) {
+                if (isConfirm) {
+                    swal({
+                        title: 'Frequency deleted!',
+                        text: 'Frequency successfully deleted!',
+                        icon: 'success'
+                    }).then(function() {
+
+                        $.ajax({
+                            type: "POST",
+                            url: url,
+                            data: { item_pk: id, model: model,app_name: app_name,
+                                'csrfmiddlewaretoken': '{{ csrf_token }}'} ,
+
+                            success: function(data)
+                            {
+                                window.location.reload();
+
+                            },
+                            error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+
+
+                                swal("Error!", "Deleting frequency failed!", "error");
+
+                            }
+                        });
+
+                        e.preventDefault(); // avoid to execute the actual submit of the form.
+                    });
+                }
+                else {
+                    swal("Cancelled", "Deleting cancelled :)", "error");
+                }
+            });
+
+            e.preventDefault(); // avoid to execute the actual submit of the form.
+        });
+
+
+       $('.btn_update').on("click", function () {
+
+                  var id = $(this).attr('id');
+
+                $("#popModal").load('{% url 'update_frequency' 123 %}'.replace('123',id), function() {
+                    $("#popModal").modal("show");
+                });
+
+
+
+        })
+
+    </script>
+
+{% endblock %}

@@ -1,0 +1,159 @@
+{% extends 'base_component.html' %}
+{% load crispy_forms_tags %}
+
+
+{% block content %}
+
+    <!-- Modal -->
+    <div class="modal-lg modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header modal_header_bg">
+                <h4 class="modal-title text-white" id="myModalLabel70">Post Commodity</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <div class="col-md-12">
+
+                    <h6 class="text-primary">Posting Date: <b>{{ scheduled_date }}</b></h6>
+                    <h6 class="text-primary">Health Facility: <b>{{ facility }}</b></h6>
+                    <h6 class="text-primary">Health Commodity: <b>{{ commodity }}</b></h6>
+                    <h6 class="text-primary">Posting Frequency in Days: <b>{{ frequency }}</b></h6>
+
+                </div>
+
+                <form id="form_post_transaction" method = "POST" >
+                    {% csrf_token %}
+
+                    <table>
+
+                        <div class="form-group col-md-4">
+                            <h6>{{ form_post_commodity.posting_schedule|as_crispy_field }}</h6>
+                        </div>
+
+
+
+                        <div class="form-group col-md-6">
+
+                            <h6>{{ form_post_commodity.quantity_available|as_crispy_field }}</h6>
+
+                            {{ unit }}
+
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <h6>{{ form_post_commodity.quantity_consumed|as_crispy_field }}</h6>
+
+                            {{ unit }}
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <h6>{{ form_post_commodity.stock_out_days|as_crispy_field }}</h6>
+                        </div>
+
+                        <div class="form-group col-md-10">
+                            <p><b>Does this commodity have patients?</b></p>
+                            <fieldset>
+                                <div class="float-left">
+                                    <input type="checkbox" class="switch" id="id_has_patients" name="has_patients"
+                                           data-reverse />
+                                </div>
+                            </fieldset>
+
+                            <br />
+                        </div>
+
+                        {% if query_commodity.track_number_of_patients == 1 %}
+                            <div class="form-group col-md-6">
+                                <h6>{{ form_post_commodity.number_of_clients|as_crispy_field }}</h6>
+                            </div>
+
+                        {% endif %}
+
+                        {% if query_commodity.track_quantity_expired == 1 %}
+                            <div class="form-group col-md-6">
+                                <h6>{{ form_post_commodity.quantity_expired|as_crispy_field }}</h6>
+                            </div>
+
+                        {% endif %}
+
+                        {% if query_commodity.track_wastage == 1 %}
+                            <div class="form-group col-md-6">
+                                <h6>{{ form_post_commodity.quantity_wasted|as_crispy_field }}</h6>
+                            </div>
+
+                        {% endif %}
+
+
+
+                    </table>
+
+
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn grey btn-outline-secondary" data-dismiss="modal">Close</button>
+                <button type="button" id="post_transaction" class="btn btn-outline-primary">Post Transaction</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+
+        $('#id_stock_out_days').on('keyup',function(e){
+
+            var posting_days = {{ frequency }};
+            var stock_out_days = document.getElementById("id_stock_out_days").value;
+
+            if (stock_out_days > posting_days)
+            {
+                swal("Stock Out Days exceeding Posting Frequency", "Stock Out Days cannot exceed the posting frequency","warning");
+                document.getElementById("id_stock_out_days").value = "";
+                document.getElementById("id_stock_out_days").focus();
+
+            }
+        });
+
+        $("#post_transaction").on("click", function () {
+
+            var url = "{% url 'save_posted_transaction' %}";
+            var form = $("#form_post_transaction");
+
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: form.serialize(),
+                success: function (data) {
+
+
+                    swal({
+                        title: 'Success!',
+                        text: 'Stock Status Posted Successfully!',
+                        icon: 'success'
+                    }).then(function() {
+
+                        window.location.reload();
+
+                    });
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+
+                    swal("Error!", "Transaction Posting failed!", "error");
+
+                }
+            });
+
+            e.preventDefault(); // avoid to execute the actual submit of the form.
+
+
+        });
+    </script>
+
+{% endblock %}

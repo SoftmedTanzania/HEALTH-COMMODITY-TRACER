@@ -1,0 +1,547 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load render_table from django_tables2 %}
+
+{% block content %}
+
+    <!-- END: Main Menu-->
+    <!-- BEGIN: Content-->
+    <div class="app-content content">
+        <div class="sidebar-left">
+            <div class="sidebar">
+                <div class="content-overlay"></div>
+                <div class="sidebar-content email-app-sidebar d-flex">
+                    <div class="email-app-menu col-md-12 card">
+                        <div class="form-group form-group-compose text-center">
+
+                            <button type="button" class="btn btn-primary round width-200 buttonAnimation" id="btn_js"
+                                    data-animation="pulse" data-toggle="modal" data-backdrop="static" data-target="#modalNewMessage">
+                                <i class="la la-mail"></i> Compose Message
+                            </button>
+
+                        </div>
+                        <h6 class="text-muted text-bold-500 mb-1">Messages</h6>
+                        <div class="list-group list-group-messages">
+
+                            <div class="card-content collapse show">
+                                <div class="card-body">
+                                    <div class="list-group">
+                                        <a href="#" class="list-group-item list-group-item-action list-group-item-success" id="id_inbox"> <i class="ft-inbox mr-1"></i>Inbox <span class="badge badge-secondary badge-pill float-right">{{ unread_messages }}</span></a>
+                                        <a href="#" class="list-group-item list-group-item-action list-group-item-info" id="id_sent"><i class="la la-paper-plane-o mr-1"></i> Sent </a>
+                                        <a href="#" class="list-group-item list-group-item-action list-group-item-danger" id="id_trash"><i class="ft-trash-2 mr-1"></i>Trash</a>
+                                        {#                                            <a href="#" class="list-group-item list-group-item-action list-group-item-danger">Vestibulum at eros</a>#}
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="content-right">
+            <div class="content-wrapper">
+                <div class="content-header row mb-1">
+                </div>
+                <div class="content-body">
+                    <div class="card email-app-details">
+                        <div class="card-content">
+                            <div class="email-app-options card-body">
+                                <div class="row">
+
+                                    <div class="col-md-12" id="table_message_items">
+
+                                        <div class="loader-wrapper" id="spinner">
+                                            <div class="loader-container">
+                                                <div class="ball-beat loader-purple">
+                                                    <div></div>
+                                                    <div></div>
+                                                    <div></div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div id="messaging_intro">
+                                        <h3>Messaging Module.</h3>
+                                            <p class="container">Welcome to the Messaging Module. Please select an action from the left
+                                            pane preview some messaging options. This module supports communication
+                                                between various staff within and outside the organisation domain.
+                                            </p>
+
+                                            </div>
+
+
+                                        <div id="id_table_message_items">
+
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-lg-4 col-md-12 col-sm-12">
+                                <div class="form-group">
+                                    <!-- Modal -->
+                                    <div class="modal fade text-left" id="modalNewMessage" tabindex="-1" role="dialog" aria-labelledby="myModalLabel70" aria-hidden="true">
+                                        <div class="modal-xl modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header modal_header_bg">
+                                                    <h4 class="modal-title text-white" id="myModalLabel70"> Compose New Message</h4>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+
+                                                    <div class="col-md-4">
+                                                        <select class="select_field_class" multiple="multiple" name="option" id="option">
+                                                            <option value="">Enter the option</option>
+                                                            {% for option in query_users %}
+                                                                <option value="{{ option.id }}">{{ option.first_name }} {{ option.last_name }}</option>
+                                                            {% endfor %}
+                                                        </select>
+
+                                                    </div>
+
+                                                    <form id="compose_new_message" method = "POST" >
+                                                        {% csrf_token %}
+
+                                                        <table>
+
+
+                                                            <div class="form-group col-md-4">
+                                                                <h6>{{ form_message.subject|as_crispy_field  }}</h6>
+                                                            </div>
+
+                                                            <div class="form-group col-md-10">
+                                                                <h6>{{ form_message.message_body|as_crispy_field  }}</h6>
+                                                            </div>
+
+
+
+                                                        </table>
+
+                                                    </form>
+
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" id="btn_close" class="btn btn-danger round width-200 buttonAnimation" data-dismiss="modal"><i class="la la-mail"></i>Close</button>
+                                                    <button type="button" class="btn btn-primary round width-200 buttonAnimation" id="btn_send_message"><i class="la la-mail"></i> Send Message</button>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- BEGIN: Page Vendor JS-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/select2.min.js"></script>
+    <script>
+
+        $(document).ready(function () {
+
+            $("#spinner").hide();
+
+            $("#id_inbox").on("click", function () {
+
+                $("#messaging_intro").hide();
+                $("#id_table_message_items").empty();
+                $("#spinner").show();
+
+
+                var url = '{% url 'load_inbox' %}';
+
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: {'csrfmiddlewaretoken': '{{ csrf_token }}'} ,
+                    success: function(data)
+                    {
+
+                        $("#spinner").hide();
+                        $("#id_table_message_items").html(data);
+
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown)
+                    {
+
+                    }
+                });
+
+
+            });
+
+            $("#id_sent").on("click", function () {
+
+                $("#messaging_intro").hide();
+                $("#id_table_message_items").empty();
+                $("#spinner").show();
+
+                var url = '{% url 'load_sent_items' %}';
+
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: {'csrfmiddlewaretoken': '{{ csrf_token }}'} ,
+                    success: function(data)
+                    {
+                        $("#spinner").hide();
+                        $("#id_table_message_items").html(data).show()
+
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown)
+                    {
+
+
+                    }
+                });
+
+
+            });
+
+            $("#id_trash").on("click", function () {
+
+                $("#messaging_intro").hide();
+                $("#id_table_message_items").empty();
+                $("#spinner").show();
+
+
+                var url = '{% url 'load_trash_items' %}';
+
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: {'csrfmiddlewaretoken': '{{ csrf_token }}'} ,
+                    success: function(data)
+                    {
+                        $("#spinner").hide();
+                        $("#id_table_message_items").html(data).show();
+
+
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown)
+                    {
+
+
+                    }
+                });
+
+
+            });
+
+        });
+
+        $('.select_field_class').select2( { placeholder: "Recipients", maximumSelectionSize: 100  } );
+
+
+        $("#btn_close").on("click", function () {
+
+            window.location.reload();
+
+        });
+
+        $(".btn_read").on("click", function () {
+
+            var id = $(this).data('id');
+
+            alert(id);
+
+            location.href = "{% url 'get_message_thread_page' 123 %}".replace('123', id);
+
+
+        });
+
+        $('.btn_trash_inbox').on("click", function(event)
+        {
+            var id = $(this).attr('id');
+            var model = "MessageRecipient";
+            var app_name = "MasterDataManagement";
+            var url = "{% url 'trash_email' %}";
+            var origin = "inbox"
+
+            swal({
+                title: "Are you sure?",
+                text: "This message will be moved to the trash can." ,
+                icon: "warning",
+                buttons: [
+                    'No, cancel it!',
+                    'Yes, I am sure!'
+                ],
+                dangerMode: true,
+            }).then(function(isConfirm) {
+                if (isConfirm) {
+                    swal({
+                        title: 'Message sent to Trash!',
+                        text: 'Message has been sent to your trash!',
+                        icon: 'success'
+                    }).then(function() {
+
+                        $.ajax({
+                            type: "POST",
+                            url: url,
+                            data: { item_pk: id, model: model,app_name: app_name, origin:origin,
+                                'csrfmiddlewaretoken': '{{ csrf_token }}'} ,
+
+                            success: function(data)
+                            {
+                                $("#id_table_message_items").html(data);
+
+                            },
+                            error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+
+                            }
+                        });
+
+                        e.preventDefault(); // avoid to execute the actual submit of the form.
+                    });
+                }
+                else {
+
+                    swal("Cancelled", "Trashing message cancelled :)", "error");
+                }
+            })
+
+        });
+
+        $('.btn_trash_sent').on("click", function(event)
+        {
+            var id = $(this).attr('id');
+            var model = "MessageRecipient";
+            var app_name = "MasterDataManagement";
+            var url = "{% url 'trash_email' %}";
+            var origin = "sent"
+
+            swal({
+                title: "Are you sure?",
+                text: "This message will be moved to the trash can." ,
+                icon: "warning",
+                buttons: [
+                    'No, cancel it!',
+                    'Yes, I am sure!'
+                ],
+                dangerMode: true,
+            }).then(function(isConfirm) {
+                if (isConfirm) {
+                    swal({
+                        title: 'Message sent to Trash!',
+                        text: 'Message has been sent to your trash!',
+                        icon: 'success'
+                    }).then(function() {
+
+                        $.ajax({
+                            type: "POST",
+                            url: url,
+                            data: { item_pk: id, model: model,app_name: app_name,origin:origin,
+                                'csrfmiddlewaretoken': '{{ csrf_token }}'} ,
+
+                            success: function(data)
+                            {
+                                $("#id_table_message_items").html(data);
+
+                            },
+                            error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+
+                            }
+                        });
+
+                        e.preventDefault(); // avoid to execute the actual submit of the form.
+                    });
+                }
+                else {
+
+                    swal("Cancelled", "Trashing message cancelled :)", "error");
+                }
+            })
+
+        });
+
+        $('.btn_untrash').on("click", function(event)
+        {
+            var id = $(this).attr('id');
+            var model = "MessageRecipient";
+            var app_name = "MasterDataManagement";
+            var url = "{% url 'untrash_email' %}";
+
+            swal({
+                title: "Are you sure?",
+                text: "This email will be returned to your inbox." ,
+                icon: "warning",
+                buttons: [
+                    'No, cancel it!',
+                    'Yes, I am sure!'
+                ],
+                dangerMode: true,
+            }).then(function(isConfirm) {
+                if (isConfirm) {
+                    swal({
+                        title: 'Email Added!',
+                        text: 'Email added to your inbox!',
+                        icon: 'success'
+                    }).then(function() {
+
+                        $.ajax({
+                            type: "POST",
+                            url: url,
+                            data: { item_pk: id, model: model,app_name: app_name,
+                                'csrfmiddlewaretoken': '{{ csrf_token }}'} ,
+
+                            success: function(data)
+                            {
+
+                                $("#id_table_message_items").html(data);
+
+
+                            },
+                            error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+
+
+
+                            }
+                        });
+
+                        {#                        e.preventDefault(); // avoid to execute the actual submit of the form.#}
+                    });
+                }
+                else {
+
+                    swal("Cancelled", "Untrashing message  cancelled :)", "error");
+                }
+            })
+
+        });
+
+        $('.btn_delete').on("click", function(event)
+        {
+            var id = $(this).attr('id');
+            var model = "MessageRecipient";
+            var app_name = "MasterDataManagement";
+            var url = "{% url 'delete_from_mail_box' %}";
+
+            swal({
+                title: "Are you sure?",
+                text: "This message will be deleted permanently",
+                icon: "warning",
+                buttons: [
+                    'No, cancel it!',
+                    'Yes, I am sure!'
+                ],
+                dangerMode: true,
+            }).then(function(isConfirm) {
+                if (isConfirm) {
+                    swal({
+                        title: 'Message deleted!',
+                        text: 'Message deleted successfully!',
+                        icon: 'success'
+                    }).then(function() {
+
+                        $.ajax({
+                            type: "POST",
+                            url: url,
+                            data: { item_pk: id, model: model,app_name: app_name,
+                                'csrfmiddlewaretoken': '{{ csrf_token }}'} ,
+
+                            success: function(data)
+                            {
+
+                                $("#id_table_message_items").html(data);
+
+                            },
+                            error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+
+                            }
+                        });
+
+                        e.preventDefault(); // avoid to execute the actual submit of the form.
+                    });
+                }
+                else {
+                    swal("Cancelled", "Deleting cancelled :)", "error");
+                }
+            })
+
+        });
+
+        $("#btn_send_message").on("click", function () {
+
+            var recipients =$('#option').val().toString();
+
+            var form = $('#compose_new_message');
+            var url = "{% url 'send_user_a_push_notification' %}";
+
+            var subject = document.getElementById("id_subject").value;
+            var message_body = document.getElementById("id_message_body").value;
+
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: {subject: subject,message_body: message_body,recipients : recipients,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'},
+
+                success: function(data)
+                {
+
+                    swal({
+                        title: "Message Sent!",
+                        text: "Would you like to compose another message?" ,
+                        icon: "success",
+                        buttons: [
+                            'No, am done!',
+                            'Yes, proceed!'
+                        ],
+                        dangerMode: true,
+                    }).then(function(isConfirm) {
+                        if (isConfirm) {
+                            swal({
+                                title: 'Success!',
+                                text: 'Message Sent Successfully!',
+                                icon: 'success'
+                            }).then(function() {
+
+                                $('#compose_new_message')[0].reset();
+                                $(".select_field_class").select2("val", "");
+
+                            });
+                        }
+                        else {
+
+                            window.location.reload();
+                        }
+                    })
+
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown)
+
+                {
+
+                    swal("Error!", "Message Failed!", "error");
+
+                }
+            });
+
+        })
+
+
+    </script>
+
+
+{% endblock %}
+<!-- END: Content-->

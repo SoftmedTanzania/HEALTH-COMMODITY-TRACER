@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+
+{% block content %}
+
+    <div class="app-content content">
+        <div class="content-wrapper">
+            <div class="content-header row mb-1">
+            </div>
+            <div class="content-body">
+                <section id="validation">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title">Message Thread</h4>
+                                    <a class="heading-elements-toggle"><i class="la la-ellipsis-h font-medium-3"></i></a>
+                                    <div class="heading-elements">
+                                        <ul class="list-inline mb-0">
+                                            <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
+                                            <li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>
+                                            <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                                            <li><a data-action="close"><i class="ft-x"></i></a></li>
+                                        </ul>
+                                    </div>
+
+
+                                        <div class="col-md-12 col-sm-12" id="id_thread_body">
+                                            <div class="card">
+                                                <div class="card-body">
+
+                                                  <a href="{% url "get_messaging_page" %}" class="text-primary">
+                                                        <i class="la la-undo"></i> <u>Back to Inbox</u>
+                                                    </a>
+
+                                                    <div class="card-body dataTables_wrapper">
+
+                                                        <h3 class="text-primary">Subject: <h6>{{ subject }}</h6></h3>
+
+                                                        <h3 class="text-primary">Message:</h3>
+                                                        <p><h6>{{ message_body }}</h6></p>
+
+                                                          <h3 class="text-primary">Recipients:</h3>
+
+                                                        {% for name in recipient_names %}
+
+                                                            <h6>{{ name.first_name }} {{ name.last_name }}</h6>
+
+                                                        {% endfor %}
+
+                                                        <div class="badge badge-secondary mb-1">Message History</div>
+
+                                                        <hr>
+
+                                                {% for x in query_message_thread %}
+
+                                                    <div class="media-left pr-1">
+                                            <span class="avatar avatar-md">
+
+                                                {% if x.creator|make_list|first|capfirst < 'E'  %}
+                                                    <span class="media-object rounded-circle text-circle bg-success">{{ x.creator|make_list|first|capfirst  }}</span>
+                                                {% elif x.creator|make_list|first|capfirst > 'D' and x.creator|make_list|first|capfirst < 'M' %}
+                                                    <span class="media-object rounded-circle text-circle bg-info">{{ x.creator|make_list|first|capfirst  }}</span>
+                                                {% else %}
+                                                    <span class="media-object rounded-circle text-circle bg-warning">{{ x.creator|make_list|first|capfirst  }}</span>
+                                                {% endif %}
+                                            </span>
+                                                    </div>
+                                                    <p>
+                                                        <h7><i>{{ x.date_time_created }}</i></h7><br />
+                                                        <h7><i>Author: {{ x.creator }}</i></h7>
+                                                    </p>
+
+                                                    <div class="chats">
+                                                        <div class="chats">
+                                                            <div class="chat">
+                                                                <div class="chat-body">
+                                                                    <div class="chat-content">
+                                                                        <p><h4 class="text-succcess">{{ x.message_body }}</h4></p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+
+                                                    <hr>
+
+                                                {% endfor %}
+
+                                                    </div>
+                                    <section class="chat-app-form">
+                                        <form class="chat-app-input d-flex" onsubmit="enter_chat();" action="javascript:void(0);">
+                                            <fieldset class="form-group position-relative has-icon-left col-10 m-0">
+                                                <textarea type="text" class="form-control message" id="id_thread_message" placeholder="Type your message"></textarea>
+                                            </fieldset>
+                                            <fieldset class="form-group position-relative has-icon-left col-2 m-0">
+                                                <button type="button" class="btn btn-primary send" id="btn_send"><i class="la la-paper-plane-o d-lg-none"></i> <span class="d-none d-lg-block">Send</span></button>
+                                            </fieldset>
+                                        </form>
+                                    </section>
+                                 </div>
+                              </div>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script>
+
+        $("#btn_send").on("click", function () {
+
+            $(this).val('Please wait ...').attr('disabled','disabled');
+
+            var message_id = "{{ message_id }}";
+            var message = document.getElementById("id_thread_message").value;
+            var url = "{% url "send_thread_message" %}";
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: { message_id: message_id, message: message,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'} ,
+
+                success: function(data)
+                {
+
+                window.location.reload();
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+
+
+                }
+            });
+
+        })
+
+
+    </script>
+{% endblock %}

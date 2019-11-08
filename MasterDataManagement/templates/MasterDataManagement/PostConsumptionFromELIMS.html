@@ -1,0 +1,102 @@
+{% extends 'base_component.html' %}
+{% load crispy_forms_tags %}
+{% load render_table from django_tables2 %}
+{% load static %}
+
+
+{% block content %}
+
+    <!-- Modal -->
+    <div class="modal-xl modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header modal_header_bg_danger">
+                <h4 class="modal-title text-white" id="myModalLabel70">Post Consumption From eLIMS</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+{#            <div id="table-list" class="col-md-4">#}
+{#                <br />#}
+{#                <label for="firstName">#}
+{#                    Search Mappings:#}
+{#                </label>#}
+{#                <input type="text" id="search_mapping" class="search form-control round border-primary mb-1" placeholder="Type to Search Mappings..." />#}
+{#            </div>#}
+
+
+            <div class="modal-body">
+
+                <div class="table_managed_commodities">
+
+                    <form id="form_consumption">
+                        {% csrf_token %}
+
+                        {% render_table table %}
+
+                    </form>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn grey btn-outline-secondary" data-dismiss="modal">Close</button>
+                <button type="button" id="post_consumption" class="btn btn-outline-primary">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        $("#post_consumption").on("click", function () {
+            var url = "{% url 'save_stock_consumed' %}";
+            var form = $("#form_consumption");
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: form.serialize(),
+                success: function (data) {
+
+
+                    $('#popModal').modal('toggle');
+
+                    $('#table_mappings').load(location.href + ' #table_mappings');
+
+
+                    swal("Successful!", "Consumption posted!", "success")
+
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+
+                    swal("Error!", "Please enter monthly consumption for all commodities.", "error");
+
+                }
+            });
+
+            e.preventDefault(); // avoid to execute the actual submit of the form.
+
+
+        });
+
+        $("#search_mapping").keyup(function () {
+            $("#spinner").show();
+
+            var value = $(this).val();
+
+            $.each($(".table tbody").find("tr"), function () {
+
+                if ($(this).text().toLowerCase().replace(/\s+/g, '').indexOf(value.replace(/\s+/g, '').toLowerCase()) == -1)
+                    $(this).hide();
+                else
+                    $(this).show();
+            });
+
+        })
+
+
+
+    </script>
+
+{% endblock %}

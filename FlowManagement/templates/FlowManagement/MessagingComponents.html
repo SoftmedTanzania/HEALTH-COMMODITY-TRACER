@@ -1,0 +1,264 @@
+{% extends 'base_messaging.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load render_table from django_tables2 %}
+
+
+{% block content %}
+
+
+    <div id="table-list" class="col-md-6">
+
+        <br />
+        <label for="message">
+            Search Message:
+        </label>
+        <input type="text" id="search_message" class="search form-control round border-primary mb-1" placeholder="Type to Search Message..." />
+    </div>
+
+    <h3>{{ title }}</h3>
+
+    {% render_table table %}
+
+    <script>
+
+        $("#search_message").keyup(function () {
+
+            var value = $(this).val();
+
+            $.each($(".table tbody").find("tr"), function () {
+
+                if ($(this).text().toLowerCase().replace(/\s+/g, '').indexOf(value.replace(/\s+/g, '').toLowerCase()) == -1)
+                    $(this).hide();
+                else
+                    $(this).show();
+            });
+
+        });
+
+
+        $(".btn_read").on("click", function () {
+
+            var id = $(this).closest("tr").find('td:eq(0)').text();
+
+            location.href = "{% url 'get_message_thread_page' 123 %}".replace('123', id);
+
+
+        });
+
+        $('.btn_trash_inbox').on("click", function(event)
+        {
+            var id = $(this).attr('id');
+            var model = "MessageRecipient";
+            var app_name = "MasterDataManagement";
+            var url = "{% url 'trash_email' %}";
+            var origin = "inbox"
+
+            swal({
+                title: "Are you sure?",
+                text: "This message will be moved to the trash can." ,
+                icon: "warning",
+                buttons: [
+                    'No, cancel it!',
+                    'Yes, I am sure!'
+                ],
+                dangerMode: true,
+            }).then(function(isConfirm) {
+                if (isConfirm) {
+                    swal({
+                        title: 'Message sent to Trash!',
+                        text: 'Message has been sent to your trash!',
+                        icon: 'success'
+                    }).then(function() {
+
+                        $.ajax({
+                            type: "POST",
+                            url: url,
+                            data: { item_pk: id, model: model,app_name: app_name, origin:origin,
+                                'csrfmiddlewaretoken': '{{ csrf_token }}'} ,
+
+                            success: function(data)
+                            {
+                                $("#id_table_message_items").html(data);
+
+                            },
+                            error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+
+                            }
+                        });
+
+                        e.preventDefault(); // avoid to execute the actual submit of the form.
+                    });
+                }
+                else {
+
+                    swal("Cancelled", "Trashing message cancelled :)", "error");
+                }
+            })
+
+        });
+
+        $('.btn_trash_sent').on("click", function(event)
+        {
+            var id = $(this).attr('id');
+            var model = "MessageRecipient";
+            var app_name = "MasterDataManagement";
+            var url = "{% url 'trash_email' %}";
+            var origin = "sent"
+
+            swal({
+                title: "Are you sure?",
+                text: "This message will be moved to the trash can." ,
+                icon: "warning",
+                buttons: [
+                    'No, cancel it!',
+                    'Yes, I am sure!'
+                ],
+                dangerMode: true,
+            }).then(function(isConfirm) {
+                if (isConfirm) {
+                    swal({
+                        title: 'Message sent to Trash!',
+                        text: 'Message has been sent to your trash!',
+                        icon: 'success'
+                    }).then(function() {
+
+                        $.ajax({
+                            type: "POST",
+                            url: url,
+                            data: { item_pk: id, model: model,app_name: app_name,origin:origin,
+                                'csrfmiddlewaretoken': '{{ csrf_token }}'} ,
+
+                            success: function(data)
+                            {
+                                $("#id_table_message_items").html(data);
+
+                            },
+                            error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+
+                            }
+                        });
+
+                        e.preventDefault(); // avoid to execute the actual submit of the form.
+                    });
+                }
+                else {
+
+                    swal("Cancelled", "Trashing message cancelled :)", "error");
+                }
+            })
+
+        });
+
+        $('.btn_untrash').on("click", function(event)
+        {
+            var id = $(this).attr('id');
+            var model = "MessageRecipient";
+            var app_name = "MasterDataManagement";
+            var url = "{% url 'untrash_email' %}";
+
+            swal({
+                title: "Are you sure?",
+                text: "This email will be returned to your inbox." ,
+                icon: "warning",
+                buttons: [
+                    'No, cancel it!',
+                    'Yes, I am sure!'
+                ],
+                dangerMode: true,
+            }).then(function(isConfirm) {
+                if (isConfirm) {
+                    swal({
+                        title: 'Email Added!',
+                        text: 'Email added to your inbox!',
+                        icon: 'success'
+                    }).then(function() {
+
+                        $.ajax({
+                            type: "POST",
+                            url: url,
+                            data: { item_pk: id, model: model,app_name: app_name,
+                                'csrfmiddlewaretoken': '{{ csrf_token }}'} ,
+
+                            success: function(data)
+                            {
+
+                                $("#id_table_message_items").html(data);
+
+
+                            },
+                            error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+
+
+
+                            }
+                        });
+
+                        {#                        e.preventDefault(); // avoid to execute the actual submit of the form.#}
+                    });
+                }
+                else {
+
+                    swal("Cancelled", "Untrashing message  cancelled :)", "error");
+                }
+            })
+
+        });
+
+        $('.btn_delete').on("click", function(event)
+        {
+            var id = $(this).attr('id');
+            var model = "MessageRecipient";
+            var app_name = "MasterDataManagement";
+            var url = "{% url 'delete_from_mail_box' %}";
+
+            swal({
+                title: "Are you sure?",
+                text: "This message will be deleted permanently",
+                icon: "warning",
+                buttons: [
+                    'No, cancel it!',
+                    'Yes, I am sure!'
+                ],
+                dangerMode: true,
+            }).then(function(isConfirm) {
+                if (isConfirm) {
+                    swal({
+                        title: 'Message deleted!',
+                        text: 'Message deleted successfully!',
+                        icon: 'success'
+                    }).then(function() {
+
+                        $.ajax({
+                            type: "POST",
+                            url: url,
+                            data: { item_pk: id, model: model,app_name: app_name,
+                                'csrfmiddlewaretoken': '{{ csrf_token }}'} ,
+
+                            success: function(data)
+                            {
+                                $("#id_table_message_items").html(data);
+
+
+                            },
+                            error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+
+                            }
+                        });
+
+                        e.preventDefault(); // avoid to execute the actual submit of the form.
+                    });
+                }
+                else {
+                    swal("Cancelled", "Deleting cancelled :)", "error");
+                }
+            })
+
+        });
+
+    </script>
+{% endblock %}

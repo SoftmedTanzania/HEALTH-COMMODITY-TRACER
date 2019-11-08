@@ -1,0 +1,90 @@
+{% extends 'base_component.html' %}
+{% load crispy_forms_tags %}
+{% load render_table from django_tables2 %}
+
+
+{% block content %}
+
+    <!-- Modal -->
+    <div class="modal-lg modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header modal_header_bg_danger">
+                <h4 class="modal-title text-white" id="myModalLabel70">Post Stock on Hand</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <div class="table_managed_commodities">
+
+                    <form id="form_stock_on_hand">
+                        {% csrf_token %}
+
+                        {% render_table table %}
+
+                    </form>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn grey btn-outline-secondary" id="btn_close">Close</button>
+                <button type="button" id="post_stock_on_hand" class="btn btn-outline-primary">Save</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+
+        $("#post_stock_on_hand").on("click", function () {
+            var url = "{% url 'save_stock_on_hand' %}";
+            var form = $("#form_stock_on_hand");
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: form.serialize(),
+                success: function (data) {
+
+
+                    $('#popModal').modal('hide');
+
+
+                    $('#table_mappings').load(location.href + ' #table_mappings');
+
+
+                    swal({
+                        title: 'Success!',
+                        text: 'Mapping commodity(s) successful!',
+                        icon: 'success'
+                    }).then(function() {
+
+                        window.location.reload();
+
+                    });
+
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+
+                    swal("Error!", "Please enter stock on hand for all commodities!", "error");
+
+                }
+            });
+
+            e.preventDefault(); // avoid to execute the actual submit of the form.
+
+
+        });
+
+        $("#btn_close").on("click", function () {
+
+            window.location.reload();
+
+        })
+
+    </script>
+
+{% endblock %}

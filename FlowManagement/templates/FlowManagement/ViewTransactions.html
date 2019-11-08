@@ -1,0 +1,224 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load render_table from django_tables2 %}
+{%  load static %}
+
+{% block content %}
+
+    <div class="app-content content">
+        <div class="content-wrapper">
+            <div class="content-header row mb-1">
+            </div>
+            <div class="content-body">
+                <section id="validation">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title">Posted Transactions</h4>
+                                    <a class="heading-elements-toggle"><i class="la la-ellipsis-h font-medium-3"></i></a>
+                                    <div class="heading-elements">
+                                        <ul class="list-inline mb-0">
+                                            <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
+                                            <li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>
+                                            <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                                            <li><a data-action="close"><i class="ft-x"></i></a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 col-sm-6">
+                                    <div class="card">
+                                        <div class="card-body">
+
+                                            <a id="btn_download" >
+                                                <i class="la la-download"></i> Export As Excel
+                                            </a>
+
+
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="card-body">
+                                    <div class="col-md-4" style="display: inline-block">
+                                        <fieldset class="form-group">
+                                            <h6>Date From:</h6>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="ft-calendar"></i></span>
+                                                </div>
+                                                <input type="text" id="id_date_from" autocomplete="off" class="form-control dp-week-year" />
+                                            </div>
+                                        </fieldset>
+                                    </div>
+
+                                    <div class="col-md-4" style="display: inline-block">
+                                        <fieldset class="form-group">
+                                            <h6>Date To:</h6>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="ft-calendar"></i></span>
+                                                </div>
+                                                <input type="text" id="id_date_to" autocomplete="off" class="form-control dp-week-year" />
+                                            </div>
+                                        </fieldset>
+                                    </div>
+
+                                    <div class="col-md-4" style="display: inline-block">
+                                        <button type="button" id="btn_filter" class="btn btn-primary">Get List</button>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12" id="table_transaction_lines">
+
+                                    {% render_table table_transactions %}
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script>
+
+        $(".btn_update").hide();
+
+        $('#btn_download').on("click", function () {
+
+            var date_from = $("#id_date_from").datepicker({ dateFormat: 'dd-mm-yyyy' }).val();
+            var date_to = $("#id_date_to").datepicker({ dateFormat: 'dd-MM-yyyy' }).val();
+
+
+
+            if (date_from > date_to)
+            {
+                swal("Wrong Dates!", "From Date is larger than To Date", "warning");
+            }
+
+            else
+            {
+                if (date_from != "" && date_to != "")
+                {
+                    var date_from_arr = date_from.split('/');
+                    var date_from_formatted  = date_from_arr[0] + '-' + date_from_arr[1]  + '-' + date_from_arr[2];
+
+                    var date_to_arr = date_to.split('/');
+                    var date_to_formatted  = date_to_arr[0] + '-' + date_to_arr[1]  + '-' + date_to_arr[2];
+
+                    window.location.href = "{% url "export_posted_transactions_xls" 123 456 %}".replace(123, date_from_formatted.toString()).replace(456, date_to_formatted.toString());
+                }
+
+                else
+                {
+                    window.location.href = "{% url "export_posted_transactions_xls" 123 456 %}".replace(123, "01-01-2017").replace(456, "01-01-2099");
+                }
+
+                $("#btn_filter").click();
+            }
+
+        });
+
+        $(function() {
+            $("#id_date_from").datepicker();
+            $("#id_date_to").datepicker();
+            $("#btn_filter").click(function() {
+                var from = $("#id_date_from").datepicker({ dateFormat: 'MM,dd,yyyy' }).val();
+                var to = $("#id_date_to").datepicker({ dateFormat: 'MM,dd,yyyy' }).val();
+
+                if (from > to)
+                {
+                    swal("Wrong Dates!", "From Date is larger than To Date", "warning");
+                }
+
+                else
+                {
+
+                    $("table tbody").find("tr").each (function(){
+
+                        var date = $(this).closest("tr").find('td:eq(1)').text();
+
+                        if ((date >= from) &&  (date <= to))
+                        {
+                            $(this).show();
+                        }
+                        else {
+
+                            $(this).hide();
+                        }
+
+                    })
+
+                }
+
+
+            });
+
+        });
+
+          $('.btn_delete').on("click", function(event)
+        {
+            var id = $(this).attr('id');
+            var model = "HealthCommodityTransactions";
+            var app_name = "MasterDataManagement";
+            var url = "{% url 'disable_item' %}";
+
+            swal({
+                title: "Are you sure?",
+                text: "Deleted Transaction is not recoverable.",
+                icon: "warning",
+                buttons: [
+                    'No, cancel it!',
+                    'Yes, I am sure!'
+                ],
+                dangerMode: true,
+            }).then(function(isConfirm) {
+                if (isConfirm) {
+                    swal({
+                        title: 'Transaction deleted!',
+                        text: 'Transaction successfully deleted!',
+                        icon: 'success'
+                    }).then(function() {
+
+                        $.ajax({
+                            type: "POST",
+                            url: url,
+                            data: { item_pk: id, model: model,app_name: app_name,
+                                'csrfmiddlewaretoken': '{{ csrf_token }}'} ,
+
+                            success: function(data)
+                            {
+                                window.location.reload();
+
+                            },
+                            error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+
+
+                                swal("Error!", "Deleting Transaction failed!", "error");
+
+                            }
+                        });
+
+                        e.preventDefault(); // avoid to execute the actual submit of the form.
+                    });
+                }
+                else {
+                    swal("Cancelled", "Deleting cancelled :)", "error");
+                }
+            });
+
+            e.preventDefault(); // avoid to execute the actual submit of the form.
+        });
+
+    </script>
+
+
+
+{% endblock %}

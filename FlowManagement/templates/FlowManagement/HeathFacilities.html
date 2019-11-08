@@ -1,0 +1,267 @@
+{% extends 'base.html' %}
+{% load render_table from django_tables2 %}
+{% load crispy_forms_tags %}
+{% load humanize %}
+{% load static %}
+
+{% block content %}
+
+    <div class="app-content content">
+        <div class="content-wrapper">
+            <div class="content-header row mb-1">
+            </div>
+            <div class="content-body">
+                <section id="validation">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title">Health Facilities Ranked By Transaction Posting</h4>
+                                    <a class="heading-elements-toggle"><i class="la la-ellipsis-h font-medium-3"></i></a>
+                                    <div class="heading-elements">
+                                        <ul class="list-inline mb-0">
+                                            <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
+                                            <li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>
+                                            <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                                            <li><a data-action="close"><i class="ft-x"></i></a></li>
+                                        </ul>
+                                    </div>
+
+                                    <div class="col-md-6 col-sm-6">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <div class="card-body dataTables_wrapper">
+
+                                                    <div id="table-list">
+
+                                                        <br />
+                                                        <label for="commodity">
+                                                            Search Facility:
+                                                        </label>
+                                                        <input type="text" id="search_location" class="search form-control round border-primary mb-1" placeholder="Type to Search Facility..." />
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                      <div class="row">
+                        <div id="recent-sales" class="col-12 col-md-12">
+                            <div class="card">
+                                <div class="card-header">
+                                <div class="card-content mt-1">
+                                    <div class="table-responsive">
+                                        <table id="recent-orders" class="table table-hover table-xl mb-0">
+                                            <thead>
+                                            <tr>
+                                                <th class="border-top-0">Location</th>
+                                                <th class="border-top-0">Facility Type</th>
+                                                <th class="border-top-0">Transactions Posted</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+
+                                            {% for facility in count_location_transactions %}
+                                                <tr>
+                                                    <td class="text-truncate">{{ facility.posting_schedule__health_commodity_balance__location__location_name }}</td>
+                                                    <td>
+                                                        <button type="button" class="btn btn-sm btn-outline-primary round">{{ facility.posting_schedule__health_commodity_balance__location__facility_type__facility_type_description }}</button>
+                                                    </td>
+
+                                                    <td class="text-truncate">{{ facility.count }}</td>
+                                                </tr>
+
+                                            {% endfor %}
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                </section>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script>
+
+        $("#search_location").keyup(function () {
+
+
+            var value = $(this).val();
+
+            $.each($(".table tbody").find("tr"), function () {
+
+                if ($(this).text().toLowerCase().replace(/\s+/g, '').indexOf(value.replace(/\s+/g, '').toLowerCase()) == -1)
+                    $(this).hide();
+                else
+                    $(this).show();
+            });
+
+        })
+
+        $("#save_new_facility").on("click", function () {
+            var form = $('#form_new_location');
+            var url = "{% url 'new_facility_save' %}";
+
+            var location_name = document.getElementById("id_location_name").value;
+
+
+            if (location_name == "")
+            {
+                swal("location name missing!", "You need to provide a location name.", "warning");
+
+                $("#id_coordinates").focus();
+            }
+
+            else {
+
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: form.serialize(),
+                    success: function (data) {
+
+                        $('#table_facilities').load(location.href + ' #table_facilities', function () {
+
+                            $('.btn_delete').on("click", function(event)
+                            {
+                                var id = $(this).attr('id');
+                                var model = "HealthFacility";
+                                var app_name = "MasterDataManagement";
+                                var url = "{% url 'delete_item' %}";
+
+                                $.ajax({
+                                    type: "POST",
+                                    url: url,
+                                    data: { item_pk: id, model: model,app_name: app_name,
+                                        'csrfmiddlewaretoken': '{{ csrf_token }}'} ,
+
+                                    success: function(data)
+                                    {
+                                        $('#table_facilities').load(location.href + ' #table_facilities');
+
+                                        swal("Success!", "Health Facility deleted!", "success");
+
+
+
+                                    },
+                                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+
+                                        $('#modalNewHealthFacility').modal('toggle');
+
+                                        swal("Error!", "Deleting Health Facility failed!", "error");
+
+                                    }
+                                });
+
+                                e.preventDefault(); // avoid to execute the actual submit of the form.
+                            });
+
+                        });
+
+                        $('#form_new_facility')[0].reset();
+
+                        swal("Success!", "New health facility added!", "success");
+
+
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+                        $('#modalNewHealthFacility').modal('toggle');
+
+                        swal("Error!", "Adding Health Facility failed!", "error");
+
+                    }
+                });
+
+                e.preventDefault(); // avoid to execute the actual submit of the form.
+
+            }
+
+        });
+
+        $('.btn_delete').on("click", function(event)
+        {
+            var id = $(this).attr('id');
+            var model = "HealthFacility";
+            var app_name = "MasterDataManagement";
+            var url = "{% url 'delete_item' %}";
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: { item_pk: id, model: model,app_name: app_name,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'} ,
+
+                success: function(data)
+                {
+                    $('#table_facilities').load(location.href + ' #table_facilities');
+
+                    swal("Success!", "Health Facility deleted!", "success");
+
+
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+
+                    $('#modalNewHealthFacility').modal('toggle');
+
+                    swal("Error!", "Deleting Health Facility failed!", "error");
+
+                }
+            });
+
+            e.preventDefault(); // avoid to execute the actual submit of the form.
+        });
+
+
+        $('.btn_update').on("click", function () {
+
+            var id = $(this).attr('id');
+
+            $("#popModal").load('{% url 'update_commodity' 123 %}'.replace('123',id), function() {
+                $("#popModal").modal("show");
+            });
+
+
+
+        })
+
+
+        $('#btn_upload').on("click", function () {
+
+
+            $("#popModal").load('{% url 'import_sheet'  %}', function() {
+                $("#popModal").modal("show");
+            });
+
+
+        })
+
+        $('#btn_download').on("click", function () {
+
+            window.location.href = '{% url "export_sheet" "sheet" %}';
+
+        })
+
+
+
+    </script>
+
+
+{% endblock %}

@@ -1,0 +1,136 @@
+{% extends 'base_component.html' %}
+{% load render_table from django_tables2 %}
+{% load crispy_forms_tags %}
+
+
+{% block content %}
+
+    <!-- Modal -->
+    <div class="modal-xl modal-dialog" role="document" id="modal_unmanaged_commodities">
+        <div class="modal-content">
+            <div class="modal-header modal_header_bg">
+                <h4 class="modal-title text-white" id="myModalLabel70">Unmanaged Commodities</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <div class="col-xl-12 col-lg-12 col-md-12">
+
+                    <h3 class="text-primary">Assigned Health Facility: <h3 id="id_health_facility">{{ user.profile.health_facility }}</h3></h3>
+
+
+                    <p>Choose Health Commodity Category you want to manage in your facility: </p>
+
+                    <div class="col-md-3">
+                        <select class="select form-control" id="id_health_category" name="health_category"> 
+                            <option value="" disabled selected><h6>---- Select Category ----</h6></option>
+
+                            {%for item in query_categories%}<option value="{{item.id}}">{{item}}</option>{%endfor%} 
+                        </select>
+                    </div>
+
+                </div><br />
+
+                <div class="col-md-12">
+                    <form id="form_map_commodities">
+                        {% csrf_token %}
+
+                        <div id="table_commodities">
+
+                            {% render_table table_unmanaged_commodities %}
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button"  class="btn_close btn grey btn-outline-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" id="save_mappings" class="btn btn-outline-primary">Next</button>
+            </div>
+
+        </div>
+
+        <script>
+
+            $(".btn_close").on("click", function () {
+
+                window.location.reload();
+
+            })
+
+            $("#save_mappings").on("click", function () {
+
+                $("#spinner").show();
+                var url = "{% url 'save_mappings_by_facility' %}";
+                var form = $("#form_map_commodities");
+
+                var health_facility = document.getElementById("id_health_facility").innerText;
+
+                if (health_facility == "None")
+
+                {
+                    swal("No acces to Health facility!", "You have no access to any health facility, please contact admin.", "warning");
+                    $("#id_health_facility").focus();
+                }
+
+                else {
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        data: form.serialize() + "&facility_id= {{ item_pk }} ",
+                        success: function (data) {
+
+                            {#                               $("#spinner").hide();#}
+
+
+                            $('#modal_unmanaged_commodities').modal('hide');
+
+
+                            $("#popModal").load('{% url 'post_stock_on_hand' %}', function() {
+                                $("#popModal").modal("show");
+                            });
+
+
+                            $('#table_commodities').load(location.href + ' #table_commodities', function () {
+
+
+                                $('.switch').checkboxpicker();
+
+                            });
+
+                            $('#table_mappings').load(location.href + ' #table_mappings');
+
+
+
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+
+                            {#                          $("#spinner").hide();#}
+
+                            swal("Error!", "Saving Mapping(s) failed!", "error");
+
+
+
+                        }
+                    });
+
+                    e.preventDefault(); // avoid to execute the actual submit of the form.
+
+                }
+
+
+            });
+
+        </script>
+
+
+
+
+{% endblock %}

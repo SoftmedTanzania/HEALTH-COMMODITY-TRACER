@@ -1,0 +1,168 @@
+{% extends 'base_messaging.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load render_table from django_tables2 %}
+
+
+{% block content %}
+
+
+    <div id="table-list" class="col-md-6">
+
+        <br />
+        <label for="message">
+            Search Message:
+        </label>
+        <input type="text" id="search_message" class="search form-control round border-primary mb-1" placeholder="Type to Search Message..." />
+    </div>
+
+
+    <h3>Inbox</h3>
+    <table class="table">
+
+        <tr>
+            <th><h4 class="text-success"><u>ID</u></h4></th>
+            <th><h4 class="text-success"><u>Subject</u></h4></th>
+            <th><h4 class="text-success"><u>Message</u></h4></th>
+            <th><h4 class="text-success"><u>Sender</u></h4></th>
+            <th></th>
+            <th></th>
+
+        </tr>
+
+        {% for x in query_inbox %}
+            <tr>
+                <td class="id">{{ x.id }}</td>
+                <td>{{ x.subject }}</td>
+                <td>{{ x.message_body }}</td>
+                <td>{{ x.creator }}</td>
+
+                <td id="id_status_data">
+                    {% for y in query_unread_messages %}
+
+                        {% if x.id == y.parent_message_id %}
+                            <i class="fa ft-mail red"></i>
+
+                        {% elif y.parent_message_id == 0 %}
+
+                            {% for z in query_unread_messages_recipients %}
+
+                                {% if z.is_read == False and z.message_id == y.id and x.id == y.id%}
+
+                                    <i class="fa ft-mail red"></i>
+
+                                {% endif %}
+
+                            {% endfor %}
+
+                        {% endif %}
+
+                    {% endfor %}
+
+                </td>
+
+                <td>
+                    <button class="btn_trash_inbox btn btn-secondary btn-xs">
+                        <i class="fa fa-trash fa-xs"></i>
+                    </button>
+                    <button class="btn_read btn btn-info btn-xs">
+                        <i class="fa fa-eye fa-xs"></i>
+                    </button>
+
+                </td>
+
+
+            </tr>
+
+        {% endfor %}
+
+
+    </table>
+
+
+    <!-- BEGIN: Page Vendor JS-->
+{#    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>#}
+{#    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/select2.min.js"></script>#}
+
+    <script>
+
+        $("#search_message").keyup(function () {
+
+            var value = $(this).val();
+
+            $.each($(".table tbody").find("tr"), function () {
+
+                if ($(this).text().toLowerCase().replace(/\s+/g, '').indexOf(value.replace(/\s+/g, '').toLowerCase()) == -1)
+                    $(this).hide();
+                else
+                    $(this).show();
+            });
+
+        });
+
+        $(".btn_read").on("click", function () {
+
+            var id = $(this).closest("tr").find('td:eq(0)').text();
+
+            location.href = "{% url 'get_message_thread_page' 123 %}".replace('123', id);
+
+
+        });
+
+
+        $('.btn_trash_inbox').on("click", function(event)
+        {
+            var id = $(this).closest("tr").find('td:eq(0)').text();
+            var model = "MessageRecipient";
+            var app_name = "MasterDataManagement";
+            var url = "{% url 'trash_inbox_message' %}";
+            var origin = "inbox"
+
+            swal({
+                title: "Are you sure?",
+                text: "This message will be moved to the trash can." ,
+                icon: "warning",
+                buttons: [
+                    'No, cancel it!',
+                    'Yes, I am sure!'
+                ],
+                dangerMode: true,
+            }).then(function(isConfirm) {
+                if (isConfirm) {
+                    swal({
+                        title: 'Message sent to Trash!',
+                        text: 'Message has been sent to your trash!',
+                        icon: 'success'
+                    }).then(function() {
+
+                        $.ajax({
+                            type: "POST",
+                            url: url,
+                            data: { item_pk: id, model: model,app_name: app_name, origin:origin,
+                                'csrfmiddlewaretoken': '{{ csrf_token }}'} ,
+
+                            success: function(data)
+                            {
+                                $("#id_table_message_items").html(data);
+
+                            },
+                            error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+
+                            }
+                        });
+
+                        e.preventDefault(); // avoid to execute the actual submit of the form.
+                    });
+                }
+                else {
+
+                    swal("Cancelled", "Trashing message cancelled :)", "error");
+                }
+            })
+
+        });
+
+
+    </script>
+{% endblock %}

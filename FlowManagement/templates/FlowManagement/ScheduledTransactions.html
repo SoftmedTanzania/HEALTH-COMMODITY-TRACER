@@ -1,0 +1,244 @@
+{% extends 'base.html' %}
+{% load render_table from django_tables2 %}
+{% load crispy_forms_tags %}
+{% load humanize %}
+{% load static %}
+
+{% block content %}
+
+    <div class="app-content content">
+        <div class="content-wrapper">
+            <div class="content-header row mb-1">
+            </div>
+            <div class="content-body">
+                <section id="validation">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title">Scheduled Transaction</h4>
+
+                                    <div class="card-block">
+                                        <div class="card-body">
+                                            <a href="{% url 'get_repost_schedule_page' %}" >
+                                                <i class="la la-eye"></i> Repost Scheduled Dates
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                    <input type="text" id="location_data" value="{{ locations }}" hidden/>
+
+                                    <a class="heading-elements-toggle"><i class="la la-ellipsis-h font-medium-3"></i></a>
+                                    <div class="heading-elements">
+                                        <ul class="list-inline mb-0">
+                                            <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
+                                            <li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>
+                                            <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                                            <li><a data-action="close"><i class="ft-x"></i></a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+
+                                <div class="card-block">
+                                    <div class="card-body">
+
+                                        {% if request.user.profile.location.location_type == "DST" %}
+                                            <div class="col-md-4">
+                                                <h6>Location:</h6>
+
+                                                <select id="select_location" style="width:16em" multiple>
+                                                </select>
+
+                                                <br /><br />
+                                            </div>
+
+                                        {% endif %}
+
+                                        <div class="col-md-4" style="display: inline-block">
+                                            <fieldset class="form-group">
+                                                <h6>Date From:</h6>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text"><i class="ft-calendar"></i></span>
+                                                    </div>
+                                                    <input type="text" id="id_date_from" autocomplete="off" class="form-control dp-week-year" />
+                                                </div>
+                                            </fieldset>
+                                        </div>
+
+                                        <div class="col-md-4" style="display: inline-block">
+                                            <fieldset class="form-group">
+                                                <h6>Date To:</h6>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text"><i class="ft-calendar"></i></span>
+                                                    </div>
+                                                    <input type="text" id="id_date_to" autocomplete="off" class="form-control dp-week-year" />
+                                                </div>
+                                            </fieldset>
+                                        </div>
+
+                                        <div class="col-md-8">
+                                            <button type="button" class="btn btn-primary round width-200 buttonAnimation" id="btn_filter" data-animation="pulse" data-toggle="modal" data-backdrop="static" data-target="#modalCategoryMapping">
+                                                <i class="la la-download"></i> Get Filtered Schedule Dates
+                                            </button>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="table" id="table_scheduled_transactions">
+
+                                    {% render_table table_scheduled_transactions %}
+
+
+                                </div>
+
+                            </div>
+
+
+
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="{% static "app-assets/js/select2totree.js" %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+    <script>
+
+        $('.btn_post').on("click", function () {
+
+            var id = $(this).attr('id');
+            var value = $(this).find('.health_commodity_balance').text();
+
+
+            $("#popModal").load('{% url 'get_post_commodity_page' 123 %}'.replace('123',id), function() {
+                $("#popModal").modal("show");
+            });
+
+
+
+        })
+
+        $('#btn_repost_scheduled_date').on("click", function () {
+
+
+            $("#popModal").load('{% url 'get_repost_schedule_page' %}', function() {
+                $("#popModal").modal("show");
+            });
+
+
+
+        })
+
+        $(function() {
+            $("#id_date_from").datepicker();
+            $("#id_date_to").datepicker();
+
+            $("#btn_filter").click(function() {
+
+                var date_from = $("#id_date_from").datepicker({ dateFormat: 'dd,MM,yyyy' }).val();
+                var date_to = $("#id_date_to").datepicker({ dateFormat: 'dd,MM,yyyy' }).val();
+
+                var locations = "";
+
+                {% if request.user.profile.location.location_type == "DST" %}
+                    locations = $('#select_location').val().toString();
+                {% endif %}
+
+                var url = "{% url 'filter_scheduled_transactions' %}";
+
+                if (date_from > date_to)
+                {
+                    swal("Wrong Dates!", "From Date is larger than To Date", "warning");
+                }
+
+                else
+                {
+                    if ((date_from != "" && date_to != ""))
+
+                    {
+
+                        {#                        $("table tbody").find("tr").each (function(){#}
+                        {##}
+                        {#                        var date = $(this).closest("tr").find('td:eq(2)').text();#}
+                        {##}
+                        {##}
+                        {#                        if ((date >= date_from) &&  (date <= date_to))#}
+                        {#                        {#}
+                        {##}
+                        {#                            $(this).show();#}
+                        {#                        }#}
+                        {#                        else {#}
+                        {##}
+                        {#                            $(this).hide();#}
+                        {#                        }#}
+                        {##}
+                        {#                    });#}
+
+                        $.ajax({
+                            type: "POST",
+                            url: url,
+                            data: {
+                                locations: locations, date_from: date_from, date_to: date_to,
+                                'csrfmiddlewaretoken': '{{ csrf_token }}'
+                            },
+
+                            success: function (data) {
+
+
+                                $("#table_scheduled_transactions").html(data);
+
+                                $('.btn_post').on("click", function () {
+
+                                    var id = $(this).attr('id');
+                                    var value = $(this).find('.health_commodity_balance').text();
+
+
+                                    $("#popModal").load('{% url 'get_post_commodity_page' 123 %}'.replace('123',id), function() {
+                                        $("#popModal").modal("show");
+                                    });
+
+
+
+                                })
+
+
+                            },
+                            error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+                                swal("Failed", "Failed to load filter schedule.", "warning");
+
+                            }
+                        });
+                    }
+                    else
+                    {
+                        swal("Empty Dates", "Atleast one filter has to be passed.","warning");
+                    }
+
+                }
+
+
+            });
+
+        });
+
+        var location_data = JSON.parse(document.getElementById("location_data").value);
+
+        $("#select_location").select2ToTree({treeData: {dataArr: location_data}, maximumSelectionLength: 100,
+            placeholder: "Select Locations", allowClear: true
+        });
+
+    </script>
+
+
+{% endblock %}

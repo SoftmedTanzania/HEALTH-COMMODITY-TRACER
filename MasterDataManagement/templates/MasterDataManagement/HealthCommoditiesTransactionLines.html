@@ -1,0 +1,335 @@
+{% extends 'base.html' %}
+{% load render_table from django_tables2 %}
+{% load crispy_forms_tags %}
+{% load humanize %}
+{% load static %}
+
+{% block content %}
+
+    <div class="app-content content">
+        <div class="content-wrapper">
+            <div class="content-header row mb-1">
+            </div>
+            <div class="content-body">
+                <section id="validation">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title">Post commodity balance.</h4>
+                                    <a class="heading-elements-toggle"><i class="la la-ellipsis-h font-medium-3"></i></a>
+                                    <div class="heading-elements">
+                                        <ul class="list-inline mb-0">
+                                            <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
+                                            <li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>
+                                            <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                                            <li><a data-action="close"><i class="ft-x"></i></a></li>
+                                        </ul>
+                                    </div>
+
+
+                                    <div class="col-md-6 col-sm-6">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <div class="card-body dataTables_wrapper">
+                                                    <button type="button" class="btn btn-success round width-200 buttonAnimation" data-animation="pulse" data-toggle="modal" data-backdrop="static" data-target="#modalNewTransaction">
+                                                        <i class="la la-plus"></i>Post Balance
+                                                    </button>
+                                                    <button type="button" class="btn btn-warning round width-200 buttonAnimation" data-animation="pulse" data-toggle="modal" data-backdrop="static" data-target="#modalNewMapping">
+                                                        <li class="la icon-directions"></li>New Mapping
+                                                    </button>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-4 col-md-12 col-sm-12">
+                                        <div class="form-group">
+                                            <!-- Modal -->
+                                            <div class="modal fade text-left" id="modalNewTransaction" tabindex="-1" role="dialog" aria-labelledby="myModalLabel70" aria-hidden="true">
+                                                <div class="modal-xl modal-dialog" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header modal_header_bg">
+                                                            <h4 class="modal-title text-white" id="myModalLabel70">Post Commodities</h4>
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+
+
+                                                            <div class="col-md-12">
+                                                                <form id="form_new_transaction"
+                                                                      action="{% url "post_transactions" %}" method = "POST" >
+                                                                    {% csrf_token %}
+
+                                                                    <table>
+
+                                                                        {#                                                                        {% crispy form %}#}
+
+                                                                        <div class="form-group col-md-4">
+                                                                            <h6>Choose Health Commodity: </h6>
+                                                                            <select class="select form-control" id="id_health_commodity_balance" name="health_commodity_balance">
+                                                                                {%for item in query_managed_commodities%}<option value="{{item.id}}">{{item}}</option>{%endfor%}
+                                                                            </select>
+
+                                                                        </div>
+
+                                                                        <div class="form-group col-md-2">
+                                                                            <h6>Number of Doses available: </h6>
+                                                                            {{ form.quantity_available }}
+                                                                        </div>
+
+                                                                        <div class="form-group col-md-10">
+                                                                            <p>Does this facility have patients for this commodity?</p>
+                                                                            <fieldset>
+                                                                                <div class="float-left">
+                                                                                    <input type="checkbox" class="switch" id="id_has_patients" name="has_patients" data-reverse />
+                                                                                </div>
+                                                                            </fieldset><br />
+
+                                                                        </div>
+
+                                                                        <div class="form-group col-md-2" id="number_of_patients">
+                                                                            <h6>Number of Patients: </h6>
+                                                                            {{ form.number_of_patients }}
+
+                                                                        </div>
+
+                                                                        <div class="form-group col-md-10">
+
+                                                                            <button type="button" id="add_transaction" class="btn btn-glow btn-outline-success">Add Transaction</button>
+
+                                                                        </div>
+
+
+                                                                    </table>
+
+
+                                                                </form>
+                                                            </div>
+
+                                                            <div class="col-md-12" id="table_transaction_holder">
+
+                                                                {% render_table table_transaction_holder %}
+
+                                                            </div>
+
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn grey btn-outline-secondary" data-dismiss="modal">Close</button>
+                                                            <button type="button" id="post_transactions" class="btn btn-outline-primary">Save changes</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="col-md-12" id="table_transactions">
+
+                                    {% render_table table_transactions %}
+
+                                </div>
+
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                </section>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="{% static "app-assets/vendors/js/forms/toggle/bootstrap-checkbox.min.js" %}"></script>
+{#    <!-- BEGIN: Page Vendor JS-->#}
+<script src="{% static "app-assets/vendors/js/forms/toggle/bootstrap-switch.min.js" %}"></script>
+<script src="{% static "app-assets/vendors/js/forms/toggle/switchery.min.js" %}"></script>
+<!-- END: Page Vendor JS-->
+
+    <script>
+
+
+    $('#id_has_patients').checkboxpicker();
+
+        $("#id_has_patients").on('change', function (e, data) {
+
+            var $element = $(data.el),
+            value = data.value;
+
+              console.log(e, $element, value);
+
+            $('#number_of_patients').show();
+
+        });
+
+
+        $("#add_transaction").on("click", function () {
+
+            var form = $('#form_new_transaction');
+            var url = form.attr('action');
+
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: form.serialize(), // serializes the form's elements.
+                success: function(data)
+                {
+
+                    $('#form_new_transaction')[0].reset();
+
+                    $('#table_transaction_holder').load(location.href + ' #table_transaction_holder');
+
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+
+                    swal("Error!", " Adding transaction(s) failed!", "error");
+
+                }
+            });
+
+            e.preventDefault(); // avoid to execute the actual submit of the form.
+
+        })
+
+
+        $("#search_commodity").keyup(function () {
+
+            var value = $(this).val();
+
+            $.each($(".table tbody").find("tr"), function () {
+
+                if ($(this).text().toLowerCase().replace(/\s+/g, '').indexOf(value.replace(/\s+/g, '').toLowerCase()) == -1)
+                    $(this).hide();
+                else
+                    $(this).show();
+            });
+
+        })
+
+        $("#post_transactions").on("click", function () {
+            var form = $('#form_new_commodity');
+            var url = "{% url 'save_transaction_lines' %}";
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: {'csrfmiddlewaretoken': '{{ csrf_token }}'} ,
+                success: function (data) {
+
+
+                    $('#modalNewTransaction').modal('toggle');
+
+                    $('#table_transactions').load(location.href + ' #table_transactions');
+
+                    swal("Success!", "Transaction(s) posted!", "success");
+
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+
+                    swal("Error!", " Transaction(s) failed!", "error");
+
+                }
+            });
+
+            e.preventDefault(); // avoid to execute the actual submit of the form.
+
+        });
+
+
+
+        $('.btn_delete').on("click", function(event)
+        {
+            var id = $(this).attr('id');
+            var model = "HealthCommodityTransactions";
+            var app_name = "MasterDataManagement";
+            var url = "{% url 'disable_item' %}";
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: { item_pk: id, model: model,app_name: app_name,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'} ,
+
+                success: function(data)
+                {
+                    $('#table_commodities').load(location.href + ' #table_commodities', function () {
+
+                        $('.btn_delete').on("click", function(event)
+                        {
+                            var id = $(this).attr('id');
+                            var model = "HealthCommodityTransactions";
+                            var app_name = "MasterDataManagement";
+                            var url = "{% url 'disable_item' %}";
+
+                            $.ajax({
+                                type: "POST",
+                                url: url,
+                                data: { item_pk: id, model: model,app_name: app_name,
+                                    'csrfmiddlewaretoken': '{{ csrf_token }}'} ,
+
+                                success: function(data)
+                                {
+                                    $('#table_commodities').load(location.href + ' #table_commodities');
+
+                                    swal("Success!", "Transaction deleted!", "success");
+
+
+                                },
+                                error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+
+
+                                    swal("Error!", "Deleting transaction failed!", "error");
+
+                                }
+                            });
+
+                            e.preventDefault(); // avoid to execute the actual submit of the form.
+                        });
+
+
+                    });
+
+
+                    swal("Success!", "Transaction deleted!", "success");
+
+
+
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+
+
+                    swal("Error!", "Deleting commodity failed!", "error");
+
+                }
+            });
+
+            e.preventDefault(); // avoid to execute the actual submit of the form.
+        });
+
+
+        $('.btn_update').on("click", function () {
+
+
+        })
+
+
+    </script>
+
+
+{% endblock %}

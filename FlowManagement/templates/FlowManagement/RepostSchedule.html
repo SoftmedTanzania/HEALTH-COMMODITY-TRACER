@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% load render_table from django_tables2 %}
+{% load crispy_forms_tags %}
+{% load humanize %}
+
+{% block content %}
+
+    <div class="app-content content">
+        <div class="content-wrapper">
+            <div class="content-header row mb-1">
+            </div>
+            <div class="content-body">
+                <section id="validation">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title">Repost Transaction</h4>
+                                    <a class="heading-elements-toggle"><i class="la la-ellipsis-h font-medium-3"></i></a>
+                                    <div class="heading-elements">
+                                        <ul class="list-inline mb-0">
+                                            <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
+                                            <li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>
+                                            <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                                            <li><a data-action="close"><i class="ft-x"></i></a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div class="card-block">
+                                    <div class="card-body">
+                                        <div class="col-md-4" style="display: inline-block">
+                                            <fieldset class="form-group">
+                                                <h6>Date From:</h6>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text"><i class="ft-calendar"></i></span>
+                                                    </div>
+                                                    <input type="text" id="id_date_from" autocomplete="off" class="form-control dp-week-year" />
+                                                </div>
+                                            </fieldset>
+                                        </div>
+
+                                        <div class="col-md-4" style="display: inline-block">
+                                            <fieldset class="form-group">
+                                                <h6>Date To:</h6>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text"><i class="ft-calendar"></i></span>
+                                                    </div>
+                                                    <input type="text" id="id_date_to" autocomplete="off" class="form-control dp-week-year" />
+                                                </div>
+                                            </fieldset>
+                                        </div>
+
+                                        <div class="col-md-8">
+                                            <button type="button" class="btn btn-primary round width-200 buttonAnimation" id="btn_filter" data-animation="pulse" data-toggle="modal" data-backdrop="static" data-target="#modalCategoryMapping">
+                                                <i class="la la-download"></i> Get Filtered Schedule Dates
+                                            </button>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="table" id="table_posted_transactions">
+
+                                    {% render_table table_posted_transactions %}
+
+
+                                </div>
+
+                            </div>
+
+
+
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script>
+
+        $('.btn_post').on("click", function () {
+
+            var id = $(this).attr('id');
+
+            $("#popModal").load('{% url 'get_post_commodity_page' 123 %}'.replace('123',id), function() {
+                $("#popModal").modal("show");
+            });
+
+
+
+        })
+
+        $(function() {
+            $("#id_date_from").datepicker();
+            $("#id_date_to").datepicker();
+            $("#btn_filter").click(function() {
+                var from = $("#id_date_from").datepicker({ dateFormat: 'dd,MM,yyyy' }).val();
+                var to = $("#id_date_to").datepicker({ dateFormat: 'dd,MM,yyyy' }).val();
+
+                if (from > to)
+                {
+                    swal("Wrong Dates!", "From Date is larger than To Date", "warning");
+                }
+
+                else
+                {
+
+                    $("table tbody").find("tr").each (function(){
+
+                        var date = $(this).closest("tr").find('td:eq(2)').text();
+
+
+                        if ((date >= from) &&  (date <= to))
+                        {
+
+                            $(this).show();
+                        }
+                        else {
+
+                            $(this).hide();
+                        }
+
+                    })
+
+                }
+
+
+            });
+
+        });
+
+    </script>
+
+
+{% endblock %}

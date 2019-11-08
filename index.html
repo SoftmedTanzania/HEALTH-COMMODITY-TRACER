@@ -1,0 +1,527 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load mptt_tags %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <div class="app-content content">
+        <div class="content-wrapper">
+            <div class="content-header row mb-1">
+            </div>
+            <div class="content-body">
+                <!-- eCommerce statistic -->
+                {% if request.user.profile.location.location_type == "CTRY" or request.user.profile.location.location_type == "RGN" or request.user.profile.location.location_type == "DST" %}
+                    <div class="row">
+                        <!-- Checkable Tree -->
+                        <div class="col-md-6 col-sm-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title">Filters</h4>
+                                </div>
+
+                                <div class="card-body">
+                                    <div class="card-body">
+                                        <button type="button" class="btn btn-warning round width-200 buttonAnimation" id="btn_js">
+                                            <i class="la la-home"></i> Jasper Server Analytics
+                                        </button>
+
+
+                                        <div class="col-md-12">
+                                            {% crispy form %}
+
+                                            {#                                        <div class="col-md-6 col-sm-12">#}
+                                            {#                                            <div class="card">#}
+                                            {#                                                <div class="card-body">#}
+                                            {#                                                    <div class="card-body">#}
+                                            {#                                                        <div class="form-group text-center">#}
+                                            {#                                                            <button type="button" class="btn btn-success mr-2" id="btn-expand-all">Expand All</button>#}
+                                            {#                                                            <button type="button" class="btn btn-warning" id="btn-collapse-all">Collapse All</button>#}
+                                            {#                                                        </div>#}
+                                            {#                                                        <div id="expandible-tree"></div>#}
+                                            {#                                                    </div>#}
+                                            {#                                                </div>#}
+                                            {#                                            </div>#}
+                                            {#                                        </div>#}
+                                        </div>
+
+                                        <div class="col-md-4" style="display: inline-block">
+                                            <fieldset class="form-group">
+                                                <h6>Date From:</h6>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text"><i class="ft-calendar"></i></span>
+                                                    </div>
+                                                    <input type="text" id="id_date_from" class="form-control dp-week-year" />
+                                                </div>
+                                            </fieldset>
+                                        </div>
+
+                                        <div class="col-md-4" style="display: inline-block">
+                                            <fieldset class="form-group">
+                                                <h6>Date To:</h6>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text"><i class="ft-calendar"></i></span>
+                                                    </div>
+                                                    <input type="text" id="id_date_to" class="form-control dp-week-year" />
+                                                </div>
+                                            </fieldset>
+                                        </div>
+
+                                        <div class="col-md-8">
+                                            <button type="button" class="btn btn-primary round width-200 buttonAnimation" id="btn_filter" data-animation="pulse" data-toggle="modal" data-backdrop="static" data-target="#modalCategoryMapping">
+                                                <i class="la la-download"></i> Filter Dashboard
+                                            </button>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <ul>
+
+                    {##}
+                    {#                                                <ul>#}
+                    {#                                                    {% recursetree nodes %}#}
+                    {#                                                        <li>#}
+                    {#                                                            {{ node.location_name }}#}
+                    {#                                                            {% if not node.is_leaf_node %}#}
+                    {#                                                                <ul class="children">#}
+                    {#                                                                    {{ children }}#}
+                    {#                                                                </ul>#}
+                    {#                                                            {% endif %}#}
+                    {#                                                        </li>#}
+                    {#                                                    {% endrecursetree %}#}
+                    {#                                                </ul>#}
+
+                    <div class="row">
+                        <div class="col-xl-3 col-lg-6 col-12">
+                            <div class="card pull-up">
+                                <div class="card-content">
+                                    <div class="card-body">
+                                        <div class="media d-flex">
+                                            <div class="media-body text-left">
+                                                <h3 class="info">{{ query_total_commodities.count }}</h3>
+                                                <h6>Total Commodities</h6>
+                                            </div>
+                                            <div>
+                                                {#                                            <i class="icon-home info font-large-2 float-right"></i>#}
+                                            </div>
+                                        </div>
+                                        <div class="progress progress-sm mt-1 mb-0 box-shadow-2">
+                                            <div class="progress-bar bg-gradient-x-info" role="progressbar" style="width: 80%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-lg-6 col-12">
+                            <div class="card pull-up">
+                                <div class="card-content">
+                                    <div class="card-body">
+                                        <div class="media d-flex">
+                                            <div class="media-body text-left">
+                                                <h3 class="warning">{{ query_total_facilities.count }}</h3>
+                                                <h6>Total Health Facilities</h6>
+                                            </div>
+                                            <div>
+                                                {#                                            <i class="icon-pie-chart warning font-large-2 float-right"></i>#}
+                                            </div>
+                                        </div>
+                                        <div class="progress progress-sm mt-1 mb-0 box-shadow-2">
+                                            <div class="progress-bar bg-gradient-x-warning" role="progressbar" style="width: 65%" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-lg-6 col-12">
+                            <div class="card pull-up">
+                                <div class="card-content">
+                                    <div class="card-body">
+                                        <div class="media d-flex">
+                                            <div class="media-body text-left">
+                                                <h3 class="danger">{{ query_total_transactions.count }}</h3>
+                                                <h6>Total Posted Transactions</h6>
+                                            </div>
+                                            <div>
+                                                {#                                            <i class="icon-heart danger font-large-2 float-right"></i>#}
+                                            </div>
+                                        </div>
+                                        <div class="progress progress-sm mt-1 mb-0 box-shadow-2">
+                                            <div class="progress-bar bg-gradient-x-danger" role="progressbar" style="width: 85%" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-3 col-lg-6 col-12">
+                            <div class="card pull-up">
+                                <div class="card-content">
+                                    <div class="card-body">
+                                        <div class="media d-flex">
+                                            <div class="media-body text-left">
+                                                <h3 class="success">{{ query_transactions_current_month.count }}</h3>
+                                                <h6>Posted Transactions in the current month</h6>
+                                            </div>
+                                            <div>
+                                                {#                                            <i class="icon-user-follow success font-large-2 float-right"></i>#}
+                                            </div>
+                                        </div>
+                                        <div class="progress progress-sm mt-1 mb-0 box-shadow-2">
+                                            <div class="progress-bar bg-gradient-x-success" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                <!--/ eCommerce statistic -->
+
+
+                <div class="row">
+                    <div class="col-xl-12 col-12">
+                        <div class="row">
+                            <div class="col-md-12 col-12">
+                                <div class="card pull-up">
+                                    <div class="card-header bg-hexagons">
+                                        <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                                    </div>
+                                    <div class="card-content collapse show bg-hexagons">
+                                        <div class="card-body pt-0">
+
+                                            <div id="container_area" class="col-md-12"></div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row">
+                    <div class="col-xl-12 col-12">
+                        <div class="row">
+                            <div class="col-md-12 col-12">
+                                <div class="card pull-up">
+                                    <div class="card-header bg-hexagons">
+                                        <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                                    </div>
+                                    <div class="card-content collapse show bg-hexagons">
+                                        <div class="card-body pt-0">
+
+                                            <div id="container_line" class="col-md-12"></div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row">
+                    <div class="col-xl-12 col-12">
+                        <div class="row">
+                            <div class="col-md-12 col-12">
+                                <div class="card pull-up">
+                                    <div class="card-header bg-hexagons">
+                                        <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                                    </div>
+                                    <div class="card-content collapse show bg-hexagons">
+                                        <div class="card-body pt-0">
+
+                                            <div id="container_bar" class="col-md-12" style="width: 2500px; height: 600px; margin: 0 auto"></div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                {% if request.user.profile.location.location_type == "CTRY" or request.user.profile.location.location_type == "RGN" or request.user.profile.location.location_type == "DST" %}
+                    <div class="row">
+                        <div id="recent-sales" class="col-12 col-md-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title">Facility Ranking based on Transaction Posting this month</h4>
+                                    <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                                    <div class="heading-elements">
+                                        <ul class="list-inline mb-0">
+                                            <li><a class="btn btn-sm btn-danger box-shadow-2 round btn-min-width pull-right" href="{% url 'facility_ranking' %}" target="_blank">View all</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="card-content mt-1">
+                                    <div class="table-responsive">
+                                        <table id="facility_ranking" class="table table-hover table-xl mb-0">
+                                            <thead>
+                                            <tr>
+                                                <th class="border-top-0">Location</th>
+                                                <th class="border-top-0">Facility Type</th>
+                                                <th class="border-top-0">Transactions Posted</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+
+                                            {% for facility in count_location_transactions %}
+                                                <tr>
+                                                    <td class="text-truncate">{{ facility.posting_schedule__health_commodity_balance__location__location_name }}</td>
+                                                    <td>
+                                                        <button type="button" class="btn btn-sm btn-outline-primary round">{{ facility.posting_schedule__health_commodity_balance__location__facility_type__facility_type_description }}</button>
+                                                    </td>
+
+                                                    <td class="text-truncate">{{ facility.count }}</td>
+                                                </tr>
+
+                                            {% endfor %}
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--/ Total earning & Recent Sales  -->
+
+                    <!-- Analytics map based session -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card box-shadow-0">
+                                <div class="card-content">
+                                    <div class="row">
+                                        <div class="col-md-12 col-12">
+                                            <div id="container_map" class="col-md-12" style="width: 2500px; height: 600px; margin: 0 auto"></div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+
+    <script src="https://code.highcharts.com/highcharts.src.js"></script>
+
+    <script src="http://code.highcharts.com/maps/highmaps.js"></script>
+    <script src="http://code.highcharts.com/maps/modules/map.js"></script>
+    <script src="https://code.highcharts.com/maps/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/maps/modules/offline-exporting.js"></script>
+
+    <script>
+
+
+        function makeTableScroll() {
+            // Constant retrieved from server-side via JSP
+            var maxRows = 6;
+
+            var table = document.getElementById('facility_ranking');
+            var wrapper = table.parentNode;
+            var rowsInTable = table.rows.length;
+            var height = 0;
+            if (rowsInTable > maxRows) {
+                for (var i = 0; i < maxRows; i++) {
+                    height += table.rows[i].clientHeight;
+                }
+                wrapper.style.height = height + "px";
+            }
+        }
+
+
+        Highcharts.chart('container_bar', {
+            chart: {
+                type: 'bar'
+            },
+            title: {
+                text: 'Bar Chart'
+            },
+            xAxis: {
+                categories: [
+
+                    {% for entry in aggregated_transactions %}'{{ entry.posting_schedule__health_commodity_balance__health_commodity__health_commodity_name }} '{% if not forloop.last %}, {% endif %}{% endfor %}
+                ]
+            },
+            series: [{
+                name: 'Average Quantity Available',
+                data: [
+                    {% for entry in aggregated_transactions %}{{ entry.average }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                ],
+                color: 'DodgerBlue'
+            }
+                , {
+                    name: 'Quantity Consumed from eLIMS',
+                    data: [
+                        {% for entry in aggregated_transactions %}{{ entry.average_consumption }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                    ],
+                    color: 'OliveDrab'
+                }
+            ]
+
+
+        });
+
+        Highcharts.chart('container_line', {
+            chart: {
+                type: 'line'
+            },
+            title: {
+                text: 'Line Graph'
+            },
+            xAxis: {
+                categories: [
+
+                    {% for entry in aggregated_transactions %}'{{ entry.posting_schedule__health_commodity_balance__health_commodity__health_commodity_name }} '{% if not forloop.last %}, {% endif %}{% endfor %}
+                ]
+            },
+            series: [{
+                name: 'Average Quantity Available',
+                data: [
+                    {% for entry in aggregated_transactions %}{{ entry.average }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                ],
+                color: 'DodgerBlue'
+            }
+                , {
+                    name: 'Quantity Consumed from eLIMS',
+                    data: [
+                        {% for entry in aggregated_transactions %}{{ entry.average_consumption }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                    ],
+                    color: 'OliveDrab'
+                }
+            ]
+
+
+        });
+
+        Highcharts.chart('container_area', {
+            chart: {
+                type: 'areaspline'
+            },
+            title: {
+                text: 'Area Spline Chart'
+            },
+            xAxis: {
+                categories: [
+
+                    {% for entry in aggregated_transactions %}'{{ entry.posting_schedule__health_commodity_balance__health_commodity__health_commodity_name }} '{% if not forloop.last %}, {% endif %}{% endfor %}
+                ]
+            },
+            series: [{
+                name: 'Average Quantity Available',
+                data: [
+                    {% for entry in aggregated_transactions %}{{ entry.average }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                ],
+                color: 'DodgerBlue  '
+            }
+                , {
+                    name: 'Quantity Consumed from eLIMS',
+                    data: [
+                        {% for entry in aggregated_transactions %}{{ entry.average_consumption }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                    ],
+                    color: 'OliveDrab '
+                }
+
+            ]
+
+
+        });
+
+        $("#btn_js").on("click", function()
+        {
+            window.open('http://178.79.177.52:8080/jasperserver-pro/flow.html?_flowId=searchFlow&mode=search&filterId=resourceTypeFilter&filterOption=resourceTypeFilter-adhocView&username=jasperadmin&password=jasperadmin/', 'name');
+        })
+
+
+        {#        $('#container_map').highcharts('Map', {#}
+        {#            #}
+        {#        });#}
+
+        var data = [
+            ['Arusha', 728],
+            ['Dar-Es-Salaam', 728],
+            ['Lindi', 728],
+            ['Dodoma', 400],
+            ['Iringa', 710],
+            ['Kagera', 963],
+            ['Kaskazini-Pemba', 541],
+            ['Kaskazini-Unguja', 622],
+            ['Kigoma', 866],
+            ['Kilimanjaro', 398],
+            ['Kusini-Pemba', 785],
+            ['Manyara', 223],
+            ['Mara', 605],
+            ['Mbeya', 237],
+            ['Morogoro', 157],
+            ['Mtwara', 134],
+            ['Mwanza', 136],
+            ['Pwani', 704],
+            ['Rukwa', 361],
+            ['Ruvuma', 500],
+            ['Shinyanga', 800],
+            ['Singida', 361],
+            ['Tabora', 361],
+            ['Tanga', 361],
+            ['Zanzibar South and Central', 361],
+            ['Zanzibar West', 361]
+        ];
+
+{#        $.getJSON('https://cdn.jsdelivr.net/gh/highcharts/highcharts@v7.0.0/samples/data/germany.geo.json', function (geojson) {#}
+        $.getJSON('{% static 'Tanzania.geo.json' %}', function (geojson) {
+
+            // Initiate the chart
+            Highcharts.mapChart('container_map', {
+                chart: {
+                    map: geojson
+                },
+
+                title: {
+                    text: 'Stock Level Severity Of Tanzanian Facilities'
+                },
+
+                mapNavigation: {
+                    enabled: true,
+                    buttonOptions: {
+                        verticalAlign: 'bottom'
+                    }
+                },
+
+                colorAxis: {
+                    tickPixelInterval: 100
+                },
+
+                series: [{
+                    data: data,
+                    keys: ['NAME_1', 'value'],
+                    joinBy: 'NAME_1',
+                    name: 'Random data',
+                    states: {
+                        hover: {
+                            color: '#a4edba'
+                        }
+                    },
+                    dataLabels: {
+                        enabled: true,
+                        format: '{point.properties.postal}'
+                    }
+                }]
+            });
+        });
+
+    </script>
+
+{% endblock %}
