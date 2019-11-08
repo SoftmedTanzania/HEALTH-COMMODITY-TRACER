@@ -12,7 +12,6 @@ from django.utils import timezone
 import json
 from django.conf import settings
 
-from UserManagement import models as user_management_models
 from MasterDataManagement import models as master_data_models
 from MasterDataManagement import forms as master_data_forms
 from FlowManagement import views as flow_management_views
@@ -69,9 +68,7 @@ def authenticate_user(request):
                 login(request, user)
                 return redirect('/admin/')
             elif user.is_staff:
-                location = user.profile.location
                 login(request, user)
-
                 return get_dashboard(request,None, None, None,None)
 
             else:
@@ -107,7 +104,7 @@ def set_changed_password(request):
 
 
 def get_new_user_page(request):
-    query_profile = user_management_models.Profile.objects.get(user=request.user)
+    # query_profile = user_management_models.Profile.objects.get(user=request.user)
     # form_user = UserProfileForm(instance=query_profile)
     form_user = UserProfileForm()
     return render(request, 'UserManagement/UserProfile.html', {'form_user':form_user})
@@ -151,7 +148,6 @@ def get_facilities_by_user(request):
 
 
 def get_children_recursively(parent_location_id):
-    children = []
     final_children = []
 
     query_all_locations = master_data_models.Location.objects.all()
@@ -189,7 +185,6 @@ def get_parent_child_relationship(request):
 
 @login_required(login_url='/')
 def get_dashboard(request, locations,commodities, date_from, date_to):
-    total_map_values = []
     districts = []
     values = []
 
@@ -381,10 +376,10 @@ def get_dashboard(request, locations,commodities, date_from, date_to):
                     unread_messages = notifications[0]
                     scheduled_items = notifications[1]
 
-                    if query_post_commodities is not None:
-                        items_found = query_post_commodities.count()
-                    else:
-                        items_found = 0
+                    # if query_post_commodities is not None:
+                    #     items_found = query_post_commodities.count()
+                    # else:
+                    #     items_found = 0
 
                     return render(request, 'UserManagement/DashboardElements.html',
                                   {'query_total_facilities': query_total_facilities,

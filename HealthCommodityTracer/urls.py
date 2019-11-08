@@ -38,4 +38,4 @@ urlpatterns = [
 
 ]
 
-flow_management_views.update_consumption_data_from_elmis(repeat=2, repeat_until=None)
+flow_management_views.update_consumption_data_from_elmis(repeat=Task.HOURLY, repeat_until=None)

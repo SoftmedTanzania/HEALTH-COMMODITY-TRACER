@@ -14,7 +14,7 @@ from django.apps import apps
 from datetime import datetime
 from datetime import timedelta
 from django.db.models import Count
-from django.db.models import Avg, Q
+from django.db.models import Q
 import json
 
 from pyfcm import FCMNotification
@@ -44,10 +44,11 @@ def get_scheduled_transaction_page(request):
 
         locations = user_management_views.get_parent_child_relationship(request)
 
-        query_health_commodity_balance = master_data_models.HealthCommodityBalance.objects.filter(location__in=facility_list, health_commodity__is_active=True)
+        query_health_commodity_balance = master_data_models.HealthCommodityBalance.objects.\
+            filter(location__in=facility_list, health_commodity__is_active=True)
 
         table_scheduled_transactions = ScheduledTransactionTable(master_data_models.PostingSchedule.objects.
-                                                                 filter(health_commodity_balance__is_active=True,status="pending", health_commodity_balance__in=
+                    filter(health_commodity_balance__is_active=True,status="pending", health_commodity_balance__in=
         query_health_commodity_balance).order_by('scheduled_date'))
 
         RequestConfig(request, paginate={'per_page': 50}).configure(table_scheduled_transactions)
@@ -365,6 +366,7 @@ def send_user_a_push_notification(request):
 
             result = push_service.multiple_devices_data_message(registration_ids=registration_ids,
                                                                 data_message=message_payload)
+            print (result)
 
         return redirect(request.META['HTTP_REFERER'])
 
@@ -427,7 +429,7 @@ def trash_email(request):
         item_pk = int(request.POST["item_pk"])
         model_name = (request.POST["model"])
         app_name = (request.POST["app_name"])
-        origin = (request.POST["origin"])
+        # origin = (request.POST["origin"])
 
         model = apps.get_model(app_name, model_name)
 

@@ -45,7 +45,8 @@ class Migration(migrations.Migration):
                 ('track_number_of_patients', models.BooleanField(default=False)),
                 ('track_wastage', models.BooleanField(default=False)),
                 ('track_quantity_expired', models.BooleanField(default=False)),
-                ('health_commodity_category', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='MasterDataManagement.HealthCommoditiesCategory')),
+                ('health_commodity_category', models.ForeignKey(blank=True, null=True, on_delete=
+                django.db.models.deletion.SET_NULL, to='MasterDataManagement.HealthCommoditiesCategory')),
             ],
             options={
                 'db_table': 'HCT_HealthCommodities',
@@ -57,7 +58,8 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('quantity_available', models.IntegerField(blank=True, null=True)),
                 ('quantity_consumed', models.IntegerField(blank=True, default=0, null=True)),
-                ('health_commodity', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='MasterDataManagement.HealthCommodity')),
+                ('health_commodity', models.ForeignKey(on_delete=
+                                                       django.db.models.deletion.CASCADE, to='MasterDataManagement.HealthCommodity')),
             ],
             options={
                 'db_table': 'HCT_HealthCommodityBalance',
@@ -86,15 +88,18 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('elims_facility_id', models.IntegerField(blank=True, null=True)),
-                ('location_type', models.CharField(choices=[('CTRY', 'country'), ('RGN', 'region'), ('DST', 'district'), ('FCT', 'facility')], max_length=25)),
+                ('location_type', models.CharField(choices=[('CTRY', 'country'), ('RGN', 'region'),
+                                                            ('DST', 'district'), ('FCT', 'facility')], max_length=25)),
                 ('location_name', models.CharField(max_length=255)),
                 ('coordinates', models.CharField(blank=True, max_length=150, null=True)),
                 ('lft', models.PositiveIntegerField(editable=False)),
                 ('rght', models.PositiveIntegerField(editable=False)),
                 ('tree_id', models.PositiveIntegerField(db_index=True, editable=False)),
                 ('level', models.PositiveIntegerField(editable=False)),
-                ('facility_type', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='MasterDataManagement.FacilityType')),
-                ('parent', mptt.fields.TreeForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='children', to='MasterDataManagement.Location')),
+                ('facility_type', models.ForeignKey(blank=True, null=True, on_delete=
+                django.db.models.deletion.SET_NULL, to='MasterDataManagement.FacilityType')),
+                ('parent', mptt.fields.TreeForeignKey(blank=True, null=True, on_delete=
+                django.db.models.deletion.SET_NULL, related_name='children', to='MasterDataManagement.Location')),
             ],
             options={
                 'abstract': False,
@@ -120,9 +125,12 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('is_read', models.BooleanField(default=False)),
                 ('is_trashed', models.BooleanField(default=False)),
-                ('location', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='MasterDataManagement.Location')),
-                ('message', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='MasterDataManagement.Message')),
-                ('recipient', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                ('location', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE,
+                                               to='MasterDataManagement.Location')),
+                ('message', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                                              to='MasterDataManagement.Message')),
+                ('recipient', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE,
+                                                to=settings.AUTH_USER_MODEL)),
             ],
             options={
                 'db_table': 'HCT_MessageRecipients',
@@ -145,7 +153,8 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('scheduled_date', models.DateField()),
                 ('status', models.CharField(default='pending', max_length=100)),
-                ('health_commodity_balance', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='MasterDataManagement.HealthCommodityBalance')),
+                ('health_commodity_balance', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                                                               to='MasterDataManagement.HealthCommodityBalance')),
             ],
             options={
                 'db_table': 'HCT_PostingSchedule',
@@ -165,7 +174,8 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='healthcommoditytransactions',
             name='posting_schedule',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='MasterDataManagement.PostingSchedule'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE,
+                                    to='MasterDataManagement.PostingSchedule'),
         ),
         migrations.AddField(
             model_name='healthcommoditytransactions',
@@ -185,11 +195,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='healthcommodity',
             name='posting_frequency',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='MasterDataManagement.PostingFrequency'),
+            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL,
+                                    to='MasterDataManagement.PostingFrequency'),
         ),
         migrations.AddField(
             model_name='healthcommodity',
             name='unit',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='MasterDataManagement.Unit'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL,
+                                    to='MasterDataManagement.Unit'),
         ),
     ]

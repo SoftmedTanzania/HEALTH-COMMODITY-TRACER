@@ -156,7 +156,7 @@ class HealthCommodityBalanceView(viewsets.ModelViewSet):
             serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(request,serializer)
-        headers = self.get_success_headers(serializer.data)
+        # headers = self.get_success_headers(serializer.data)
 
         query_commodity_balance = master_data_models.HealthCommodityBalance.objects.filter(location=request.user.
                                                                                            profile.location)
@@ -521,7 +521,7 @@ class UpdateMessageRecipientsIsTrashed(generics.UpdateAPIView):
             creator_id = query_message.creator_id
 
             fcm_tokens = user_management_models.Profile.objects.filter(user_id__in=query_message_recipients)
-            creator_fcm_token = user_management_models.Profile.objects.get(user_id=creator_id)
+            # creator_fcm_token = user_management_models.Profile.objects.get(user_id=creator_id)
 
             message_payload = {"type": "NEW_MESSAGE",
                                "data": recipient_array}
@@ -537,6 +537,8 @@ class UpdateMessageRecipientsIsTrashed(generics.UpdateAPIView):
 
             result = push_service.multiple_devices_data_message(registration_ids=registration_ids,
                                                                 data_message=message_payload)
+
+            print (result)
 
             return Response("Success.", status=status.HTTP_200_OK)
 

@@ -18,9 +18,8 @@ import traceback
 
 from FlowManagement import views as flow_management_views
 from MasterDataManagement import models as master_data_models
-from datetime import datetime
 from datetime import timedelta
-from django.db.models import Avg, Q
+from django.db.models import Q
 from datetime import date
 import datetime
 import xlwt

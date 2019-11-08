@@ -78,7 +78,8 @@ REST_AUTH_SERIALIZERS = {
     'USER_SERIALIZER': 'API.serializers.UserProfileSerializer',
 }
 
-FCM_APIKEY= "AAAAx9az6G8:APA91bEPwkrcm7CJomrtx7KAmkCyKY3qDrR4wztejCojWpoeWGtbz1dr78WyZ3y3Kn55LFn6ww81zHqHQ0Svu8Fo5wvBT8ZD9l6SDzYv_7Ao96MYtAUIqd9L6n44xx3O03OmVxmeX7i3"
+FCM_APIKEY= "AAAAx9az6G8:APA91bEPwkrcm7CJomrtx7KAmkCyKY3qDrR4wztejCojWpoeWGtbz1dr78WyZ3y3Kn55LFn6ww8" \
+            "1zHqHQ0Svu8Fo5wvBT8ZD9l6SDzYv_7Ao96MYtAUIqd9L6n44xx3O03OmVxmeX7i3"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

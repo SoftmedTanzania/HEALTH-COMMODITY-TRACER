@@ -3,7 +3,7 @@ from django.db import models
 from MasterDataManagement import models as master_data_models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from mptt.models import MPTTModel, TreeForeignKey
+from mptt.models import TreeForeignKey
 
 
 # Create your models here.
