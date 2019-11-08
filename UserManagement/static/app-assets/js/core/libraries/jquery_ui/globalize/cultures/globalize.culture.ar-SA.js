@@ -234,7 +234,7 @@ Globalize.addCultureInfo( "ar-SA", "default", {
                         var hyear = 0,
                             hmonth = 1;
                         // find the earliest gregorian date in the array that is greater than or equal to the given date
-                        while (ticks > this._yearInfo[++hyear][1]) { }
+                        // while (ticks > this._yearInfo[++hyear][1]) {  }
                         if (ticks !== this._yearInfo[hyear][1]) {
                             hyear--;
                         }
