@@ -89,7 +89,7 @@ def view_health_commodity_transactions(request):
     facility_list = user_management_views.get_facilities_by_user(request).values('id')
 
     query_transactions = master_data_models.HealthCommodityTransactions.objects.filter(is_active=True,
-                                                                                       posting_schedule__health_commodity_balance__location__in=facility_list).order_by('-id')
+                            posting_schedule__health_commodity_balance__location__in=facility_list).order_by('-id')
     table_transactions = HealthCommodityTransactionTable(query_transactions)
 
     RequestConfig(request, paginate={'per_page': 50}).configure(table_transactions)
@@ -648,7 +648,9 @@ def get_auth():
 
 def get_data(cookie, startDate, endDate):
     r = requests.get(
-        'https://elmis.co.tz/reports/reportdata/facilityConsumption.json?disaggregated=true&facility=&facilityType=&max=10000&pdformat=1&periodEnd='+endDate+'&periodStart='+startDate+'&program=2&zone=437&zoneName=Tanzania+-+Country',
+        'https://elmis.co.tz/reports/reportdata/facilityConsumption.json?disaggregated=true&facility=&facilityType='
+        '&max=10000&pdformat=1&periodEnd='+endDate+'&periodStart='+startDate+'&program=2&zone=437&zoneName='
+                                                                             'Tanzania+-+Country',
         params={'q': 'requests+language:python'},
         headers={'Cookie': cookie}
     )

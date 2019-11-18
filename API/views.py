@@ -464,6 +464,8 @@ class ReceivedMessageView(generics.CreateAPIView):
         result = push_service.multiple_devices_data_message(registration_ids=registration_ids,
                                                             data_message=message_payload)
 
+        print(result)
+
         return message_payload
 
 
@@ -540,7 +542,7 @@ class UpdateMessageRecipientsIsTrashed(generics.UpdateAPIView):
             result = push_service.multiple_devices_data_message(registration_ids=registration_ids,
                                                                 data_message=message_payload)
 
-            print (result)
+            print(result)
 
             return Response("Success.", status=status.HTTP_200_OK)
 
@@ -599,6 +601,8 @@ class UpdateMessageRecipientsDeletedFromMailbox(generics.UpdateAPIView):
 
             result = push_service.multiple_devices_data_message(registration_ids=registration_ids,
                                                                 data_message=message_payload)
+
+            print(result)
 
             return Response("Success.", status=status.HTTP_200_OK)
 
