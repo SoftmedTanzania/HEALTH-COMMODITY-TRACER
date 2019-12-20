@@ -53,17 +53,24 @@
                             <h6>{{ form_post_commodity.stock_out_days|as_crispy_field }}</h6>
                         </div>
 
-                        <div class="form-group col-md-10">
-                            <p><b>Does this commodity have patients?</b></p>
-                            <fieldset>
-                                <div class="float-left">
-                                    <input type="checkbox" class="switch" id="id_has_patients" name="has_patients"
-                                           data-reverse />
-                                </div>
-                            </fieldset>
+                          {% if query_commodity.has_clients == 1 %}
+                            <div class="form-group col-md-6">
+                                <h6>{{ form_post_commodity.has_patients|as_crispy_field }}</h6>
+                            </div>
 
-                            <br />
-                        </div>
+                        {% endif %}
+
+{#                        <div class="form-group col-md-10">#}
+{#                            <p><b>Does this commodity have clients?</b></p>#}
+{#                            <fieldset>#}
+{#                                <div class="float-left">#}
+{#                                    <input type="checkbox" class="switch" id="id_has_patients" name="has_patients"#}
+{#                                           data-reverse />#}
+{#                                </div>#}
+{#                            </fieldset>#}
+{##}
+{#                            <br />#}
+{#                        </div>#}
 
                         {% if query_commodity.track_number_of_patients == 1 %}
                             <div class="form-group col-md-6">

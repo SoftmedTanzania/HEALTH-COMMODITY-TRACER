@@ -230,51 +230,51 @@
 
         </div>
 
-        {% if request.user.profile.location.location_type == "CTRY" or request.user.profile.location.location_type == "RGN" or request.user.profile.location.location_type == "DST" %}
-            <div class="row">
-                <div id="recent-sales" class="col-12 col-md-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h4 class="card-title">Facility Ranking based on Transaction Posting this month</h4>
-                            <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
-                            <div class="heading-elements">
-                                <ul class="list-inline mb-0">
-                                    <li><a class="btn btn-sm btn-danger box-shadow-2 round btn-min-width pull-right" href="{% url 'facility_ranking' %}" target="_blank">View all</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="card-content mt-1">
-                            <div class="table-responsive">
-                                <table id="facility_ranking" class="table table-hover table-xl mb-0">
-                                    <thead>
-                                    <tr>
-                                        <th class="border-top-0">Location</th>
-                                        <th class="border-top-0">Facility Type</th>
-                                        <th class="border-top-0">Transactions Posted</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-
-                                    {% for facility in count_location_transactions %}
-                                        <tr>
-                                            <td class="text-truncate">{{ facility.posting_schedule__health_commodity_balance__location__location_name }}</td>
-                                            <td>
-                                                <button type="button" class="btn btn-sm btn-outline-primary round">{{ facility.posting_schedule__health_commodity_balance__location__facility_type__facility_type_description }}</button>
-                                            </td>
-
-                                            <td class="text-truncate">{{ facility.count }}</td>
-                                        </tr>
-
-                                    {% endfor %}
-
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        {% endif %}
+{#        {% if request.user.profile.location.location_type == "CTRY" or request.user.profile.location.location_type == "RGN" or request.user.profile.location.location_type == "DST" %}#}
+{#            <div class="row">#}
+{#                <div id="recent-sales" class="col-12 col-md-12">#}
+{#                    <div class="card">#}
+{#                        <div class="card-header">#}
+{#                            <h4 class="card-title">Facility Ranking based on Transaction Posting this month</h4>#}
+{#                            <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>#}
+{#                            <div class="heading-elements">#}
+{#                                <ul class="list-inline mb-0">#}
+{#                                    <li><a class="btn btn-sm btn-danger box-shadow-2 round btn-min-width pull-right" href="{% url 'facility_ranking' %}" target="_blank">View all</a></li>#}
+{#                                </ul>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                        <div class="card-content mt-1">#}
+{#                            <div class="table-responsive">#}
+{#                                <table id="facility_ranking" class="table table-hover table-xl mb-0">#}
+{#                                    <thead>#}
+{#                                    <tr>#}
+{#                                        <th class="border-top-0">Location</th>#}
+{#                                        <th class="border-top-0">Facility Type</th>#}
+{#                                        <th class="border-top-0">Transactions Posted</th>#}
+{#                                    </tr>#}
+{#                                    </thead>#}
+{#                                    <tbody>#}
+{##}
+{#                                    {% for facility in count_location_transactions %}#}
+{#                                        <tr>#}
+{#                                            <td class="text-truncate">{{ facility.posting_schedule__health_commodity_balance__location__location_name }}</td>#}
+{#                                            <td>#}
+{#                                                <button type="button" class="btn btn-sm btn-outline-primary round">{{ facility.posting_schedule__health_commodity_balance__location__facility_type__facility_type_description }}</button>#}
+{#                                            </td>#}
+{##}
+{#                                            <td class="text-truncate">{{ facility.count }}</td>#}
+{#                                        </tr>#}
+{##}
+{#                                    {% endfor %}#}
+{##}
+{#                                    </tbody>#}
+{#                                </table>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#        {% endif %}#}
         <!--/ Total earning & Recent Sales  -->
 
         {% if request.user.profile.location.location_type == "CTRY" or request.user.profile.location.location_type == "RGN"  %}
@@ -454,6 +454,7 @@
                     }]
                 });
             });
+
 
         });
 

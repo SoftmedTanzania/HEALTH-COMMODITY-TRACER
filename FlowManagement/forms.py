@@ -10,7 +10,7 @@ class PostCommodityForm(forms.ModelForm):
 
     class Meta:
         model = master_data_models.HealthCommodityTransactions
-        fields = ('posting_schedule','quantity_available','quantity_consumed', "has_patients",
+        fields = ('posting_schedule','quantity_available','quantity_consumed', 'has_patients',
                   'stock_out_days', 'number_of_clients', 'quantity_expired', 'quantity_wasted')
         widgets = {
             'number_of_patients': forms.TextInput(attrs={'class': 'form-control'}),
@@ -20,6 +20,7 @@ class PostCommodityForm(forms.ModelForm):
         labels = {
             'quantity_available':'Stock on Hand',
             'quantity_consumed': 'Average Monthly Consumption',
+            'has_patients': 'Does this commodity have clients? (Tick if yes)',
         }
 
 

@@ -94,6 +94,7 @@ class HealthCommodity(models.Model):
     health_commodity_category = models.ForeignKey(HealthCommoditiesCategory, on_delete=models.SET_NULL, null=True, blank=True)
     unit = models.ForeignKey(Unit, on_delete=models.SET_NULL, blank=True, null=True)
     posting_frequency = models.ForeignKey(PostingFrequency, on_delete=models.SET_NULL, null=True)
+    has_clients = models.BooleanField(default=False)
     track_number_of_patients = models.BooleanField(default=False)
     track_wastage = models.BooleanField(default=False)
     track_quantity_expired = models.BooleanField(default=False)

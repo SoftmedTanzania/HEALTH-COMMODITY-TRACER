@@ -46,8 +46,8 @@
                                                         <br /><br />
                                                     </div>
 
-                                                      <div class="col-md-6">
-                                                      <h6>Health Commodity:</h6>
+                                                    <div class="col-md-6">
+                                                        <h6>Health Commodity:</h6>
                                                         <select class="select_field_class" multiple="multiple" name="option" id="option">
                                                             <option value="">Enter the option</option>
                                                             {% for option in query_health_commodities %}
@@ -83,6 +83,15 @@
                                                         <button type="button" class="btn btn-primary round width-200 buttonAnimation" id="btn_filter" data-animation="pulse" data-toggle="modal" data-backdrop="static" data-target="#modalCategoryMapping">
                                                             <i class="la la-download"></i> Filter Dashboard
                                                         </button>
+                                                    </div>
+                                                    <div class="loader-wrapper" id="filter_spinner">
+                                                        <div class="loader-container">
+                                                            <div class="ball-beat loader-purple">
+                                                                <div></div>
+                                                                <div></div>
+                                                                <div></div>
+                                                            </div>
+                                                        </div>
                                                     </div>
 
 
@@ -209,7 +218,7 @@
 
                                                 <div id="container_months_of_stock" class="col-md-12" style="width: 2500px; height: 600px; margin: 0 auto">
 
-                                                    <div class="loader-wrapper" id="spinner">
+                                                    <div class="loader-wrapper" id="months_of_stock_spinner">
                                                         <div class="loader-container">
                                                             <div class="ball-beat loader-purple">
                                                                 <div></div>
@@ -243,7 +252,7 @@
 
                                                 <div id="container_area" class="col-md-12">
 
-                                                    <div class="loader-wrapper" id="spinner">
+                                                    <div class="loader-wrapper" id="area_spinner">
                                                         <div class="loader-container">
                                                             <div class="ball-beat loader-purple">
                                                                 <div></div>
@@ -264,39 +273,39 @@
 
                     </div>
 
-{#                    <div class="row">#}
-{#                        <div class="col-xl-12 col-12">#}
-{#                            <div class="row">#}
-{#                                <div class="col-md-12 col-12">#}
-{#                                    <div class="card pull-up">#}
-{#                                        <div class="card-header bg-hexagons">#}
-{#                                            <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>#}
-{#                                        </div>#}
-{#                                        <div class="card-content collapse show bg-hexagons">#}
-{#                                            <div class="card-body pt-0">#}
-{##}
-{#                                                <div id="container_line" class="col-md-12">#}
-{##}
-{#                                                    <div class="loader-wrapper" id="spinner">#}
-{#                                                        <div class="loader-container">#}
-{#                                                            <div class="ball-beat loader-purple">#}
-{#                                                                <div></div>#}
-{#                                                                <div></div>#}
-{#                                                                <div></div>#}
-{#                                                            </div>#}
-{#                                                        </div>#}
-{#                                                    </div>#}
-{##}
-{#                                                </div>#}
-{##}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                    </div>#}
-{#                                </div>#}
-{#                            </div>#}
-{#                        </div>#}
-{##}
-{#                    </div>#}
+                    {#                    <div class="row">#}
+                    {#                        <div class="col-xl-12 col-12">#}
+                    {#                            <div class="row">#}
+                    {#                                <div class="col-md-12 col-12">#}
+                    {#                                    <div class="card pull-up">#}
+                    {#                                        <div class="card-header bg-hexagons">#}
+                    {#                                            <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>#}
+                    {#                                        </div>#}
+                    {#                                        <div class="card-content collapse show bg-hexagons">#}
+                    {#                                            <div class="card-body pt-0">#}
+                    {##}
+                    {#                                                <div id="container_line" class="col-md-12">#}
+                    {##}
+                    {#                                                    <div class="loader-wrapper" id="spinner">#}
+                    {#                                                        <div class="loader-container">#}
+                    {#                                                            <div class="ball-beat loader-purple">#}
+                    {#                                                                <div></div>#}
+                    {#                                                                <div></div>#}
+                    {#                                                                <div></div>#}
+                    {#                                                            </div>#}
+                    {#                                                        </div>#}
+                    {#                                                    </div>#}
+                    {##}
+                    {#                                                </div>#}
+                    {##}
+                    {#                                            </div>#}
+                    {#                                        </div>#}
+                    {#                                    </div>#}
+                    {#                                </div>#}
+                    {#                            </div>#}
+                    {#                        </div>#}
+                    {##}
+                    {#                    </div>#}
 
                     <div class="row">
                         <div class="col-xl-12 col-12">
@@ -311,7 +320,7 @@
 
                                                 <div id="container_bar" class="col-md-12" style="width: 2500px; height: 600px; margin: 0 auto">
 
-                                                    <div class="loader-wrapper" id="spinner">
+                                                    <div class="loader-wrapper" id="bar_spinner">
                                                         <div class="loader-container">
                                                             <div class="ball-beat loader-purple">
                                                                 <div></div>
@@ -332,51 +341,51 @@
 
                     </div>
 
-                    {% if request.user.profile.location.location_type == "CTRY" or request.user.profile.location.location_type == "RGN" or request.user.profile.location.location_type == "DST" %}
-                        <div class="row">
-                            <div id="recent-sales" class="col-12 col-md-12">
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h4 class="card-title">Facility Ranking based on Transaction Posting this month</h4>
-                                        <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
-                                        <div class="heading-elements">
-                                            <ul class="list-inline mb-0">
-                                                <li><a class="btn btn-sm btn-danger box-shadow-2 round btn-min-width pull-right" href="{% url 'facility_ranking' %}">View all</a></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                    <div class="card-content mt-1">
-                                        <div class="table-responsive">
-                                            <table id="facility_ranking" class="table table-hover table-xl mb-0">
-                                                <thead>
-                                                <tr>
-                                                    <th class="border-top-0">Location</th>
-                                                    <th class="border-top-0">Facility Type</th>
-                                                    <th class="border-top-0">Transactions Posted</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-
-                                                {% for facility in count_location_transactions %}
-                                                    <tr>
-                                                        <td class="text-truncate">{{ facility.posting_schedule__health_commodity_balance__location__location_name }}</td>
-                                                        <td>
-                                                            <button type="button" class="btn btn-sm btn-outline-primary round">{{ facility.posting_schedule__health_commodity_balance__location__facility_type__facility_type_description }}</button>
-                                                        </td>
-
-                                                        <td class="text-truncate">{{ facility.count }}</td>
-                                                    </tr>
-
-                                                {% endfor %}
-
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    {% endif %}
+{#                    {% if request.user.profile.location.location_type == "CTRY" or request.user.profile.location.location_type == "RGN" or request.user.profile.location.location_type == "DST" %}#}
+{#                        <div class="row">#}
+{#                            <div id="recent-sales" class="col-12 col-md-12">#}
+{#                                <div class="card">#}
+{#                                    <div class="card-header">#}
+{#                                        <h4 class="card-title">Facility Ranking based on Transaction Posting this month</h4>#}
+{#                                        <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>#}
+{#                                        <div class="heading-elements">#}
+{#                                            <ul class="list-inline mb-0">#}
+{#                                                <li><a class="btn btn-sm btn-danger box-shadow-2 round btn-min-width pull-right" href="{% url 'facility_ranking' %}">View all</a></li>#}
+{#                                            </ul>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                    <div class="card-content mt-1">#}
+{#                                        <div class="table-responsive">#}
+{#                                            <table id="facility_ranking" class="table table-hover table-xl mb-0">#}
+{#                                                <thead>#}
+{#                                                <tr>#}
+{#                                                    <th class="border-top-0">Location</th>#}
+{#                                                    <th class="border-top-0">Facility Type</th>#}
+{#                                                    <th class="border-top-0">Transactions Posted</th>#}
+{#                                                </tr>#}
+{#                                                </thead>#}
+{#                                                <tbody>#}
+{##}
+{#                                                {% for facility in count_location_transactions %}#}
+{#                                                    <tr>#}
+{#                                                        <td class="text-truncate">{{ facility.posting_schedule__health_commodity_balance__location__location_name }}</td>#}
+{#                                                        <td>#}
+{#                                                            <button type="button" class="btn btn-sm btn-outline-primary round">{{ facility.posting_schedule__health_commodity_balance__location__facility_type__facility_type_description }}</button>#}
+{#                                                        </td>#}
+{##}
+{#                                                        <td class="text-truncate">{{ facility.count }}</td>#}
+{#                                                    </tr>#}
+{##}
+{#                                                {% endfor %}#}
+{##}
+{#                                                </tbody>#}
+{#                                            </table>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    {% endif %}#}
                     <!--/ Total earning & Recent Sales  -->
 
                     {% if request.user.profile.location.location_type == "CTRY" or request.user.profile.location.location_type == "RGN"  %}
@@ -389,7 +398,7 @@
                                             <div class="col-md-12 col-12">
                                                 <div id="container_map" class="col-md-12" style="width: 2500px; height: 600px; margin: 0 auto">
 
-                                                    <div class="loader-wrapper" id="spinner">
+                                                    <div class="loader-wrapper" id="map_spinner">
                                                         <div class="loader-container">
                                                             <div class="ball-beat loader-purple">
                                                                 <div></div>
@@ -413,15 +422,12 @@
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-
     <script src="https://code.highcharts.com/highcharts.src.js"></script>
     <script src="http://code.highcharts.com/highcharts.js"></script>
-
     <script src="http://code.highcharts.com/maps/highmaps.js"></script>
     <script src="http://code.highcharts.com/maps/modules/map.js"></script>
     <script src="https://code.highcharts.com/maps/modules/exporting.js"></script>
     <script src="https://code.highcharts.com/maps/modules/offline-exporting.js"></script>
-
     <script src="{% static "app-assets/js/select2totree.js" %}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
 
@@ -429,6 +435,8 @@
     <script>
 
         $(document).ready(function(){
+
+            $("#filter_spinner").hide();
 
             Highcharts.chart('container_months_of_stock', {
                 chart: {
@@ -539,93 +547,6 @@
 
 
             });
-
-{#            Highcharts.chart('container_line', {#}
-{#                chart: {#}
-{#                    type: 'line',#}
-{#                    events: {#}
-{#                        load: function (event) {#}
-{##}
-{#                            var availableQty = this.series[0];#}
-{#                            var consumedQty = this.series[1];#}
-{##}
-{#                            var availableQtys = availableQty.data;#}
-{#                            var consumedQtys = availableQty.data;#}
-{##}
-{##}
-{#                            for (var i = 0; i < availableQtys.length; i++) {#}
-{#                                var theDataPoint = availableQtys[i].y;#}
-{#                                var theCompDataPoint = consumedQtys[i].y;#}
-{##}
-{#                                var ratio = theDataPoint/theCompDataPoint;#}
-{##}
-{#                                if (0 < ratio <= 0.5) {#}
-{#                                    availableQty.points[i].update({#}
-{#                                        color: 'maroon'#}
-{#                                    });#}
-{#                                }#}
-{#                                else{#}
-{##}
-{#                                    if (0.5 < ratio <= 3){#}
-{##}
-{#                                        availableQty.points[i].update({#}
-{#                                            color: 'yellow'#}
-{#                                        });#}
-{#                                    }#}
-{##}
-{#                                    else{#}
-{##}
-{#                                        if (3 < ratio <= 6)#}
-{#                                        {#}
-{#                                            availableQty.points[i].update({#}
-{#                                                color: 'green'#}
-{#                                            });#}
-{#                                        }#}
-{##}
-{#                                        else {#}
-{##}
-{#                                            availableQty.points[i].update({#}
-{#                                                color: 'blue'#}
-{#                                            });#}
-{#                                        }#}
-{#                                    }#}
-{##}
-{##}
-{#                                }#}
-{##}
-{#                            }#}
-{##}
-{#                        }#}
-{#                    }#}
-{##}
-{#                },#}
-{#                title: {#}
-{#                    text: 'Posted Stock On Hand vs Average Consumption by Commodity Frequency Line Graph'#}
-{#                },#}
-{#                xAxis: {#}
-{#                    categories: [#}
-{##}
-{#                        {% for entry in aggregated_transactions %}'{{ entry.posting_schedule__health_commodity_balance__health_commodity__health_commodity_name }} '{% if not forloop.last %}, {% endif %}{% endfor %}#}
-{#                    ]#}
-{#                },#}
-{#                series: [{#}
-{#                    name: 'Average Stock on Hand',#}
-{#                    data: [#}
-{#                        {% for entry in aggregated_transactions %}{{ entry.average }}{% if not forloop.last %}, {% endif %}{% endfor %}#}
-{#                    ],#}
-{#                    color: 'DodgerBlue',#}
-{#                }#}
-{#                    , {#}
-{#                        name: 'Average Consumption by Commodity Frequency',#}
-{#                        data: [#}
-{#                            {% for entry in aggregated_transactions %}{{ entry.average_consumption }}{% if not forloop.last %}, {% endif %}{% endfor %}#}
-{#                        ],#}
-{#                        color: 'OliveDrab'#}
-{#                    }#}
-{#                ]#}
-{##}
-{##}
-{#            });#}
 
             Highcharts.chart('container_area', {
                 chart: {
@@ -804,9 +725,12 @@
                         }
                     }]
                 });
+
+
             });
 
             $("#btn_filter").on("click", function () {
+
 
                 var locations = $('#select_location').val().toString();
                 var commodities = $('.select_field_class').val().toString();
@@ -822,6 +746,8 @@
                 }
 
                 else {
+
+                    $("#filter_spinner").show();
 
                     $("#dashboard_elements").empty();
 
@@ -847,6 +773,7 @@
 
                                     $("#dashboard_elements").html(data);
 
+                                    $("#filter_spinner").hide();
 
                                 },
                                 error: function (XMLHttpRequest, textStatus, errorThrown) {

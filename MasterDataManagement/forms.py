@@ -21,8 +21,12 @@ class HealthCommodityForm(forms.ModelForm):
 
     class Meta:
         model = HealthCommodity
-        fields = ('health_commodity_name', "elims_product_id", 'description', 'health_commodity_category', 'unit', 'posting_frequency',
-                  'track_number_of_patients', 'track_wastage', 'track_quantity_expired')
+        fields = ('health_commodity_name', "elims_product_id", 'description', 'health_commodity_category', 'unit',
+                  'posting_frequency','has_clients', 'track_number_of_patients', 'track_wastage',
+                  'track_quantity_expired')
+        labels = {
+            'has_clients': 'Track if commodity has clients',
+        }
 
 
 class HealthCommodityCategoryForm(forms.ModelForm):

@@ -44,11 +44,11 @@ def get_scheduled_transaction_page(request):
 
         locations = user_management_views.get_parent_child_relationship(request)
 
-        query_health_commodity_balance = master_data_models.HealthCommodityBalance.objects.\
+        query_health_commodity_balance = master_data_models.HealthCommodityBalance.objects. \
             filter(location__in=facility_list, health_commodity__is_active=True)
 
         table_scheduled_transactions = ScheduledTransactionTable(master_data_models.PostingSchedule.objects.
-                    filter(health_commodity_balance__is_active=True,status="pending", health_commodity_balance__in=
+                                                                 filter(health_commodity_balance__is_active=True,status="pending", health_commodity_balance__in=
         query_health_commodity_balance).order_by('scheduled_date'))
 
         RequestConfig(request, paginate={'per_page': 50}).configure(table_scheduled_transactions)
@@ -89,7 +89,7 @@ def view_health_commodity_transactions(request):
     facility_list = user_management_views.get_facilities_by_user(request).values('id')
 
     query_transactions = master_data_models.HealthCommodityTransactions.objects.filter(is_active=True,
-                            posting_schedule__health_commodity_balance__location__in=facility_list).order_by('-id')
+                                                                                       posting_schedule__health_commodity_balance__location__in=facility_list).order_by('-id')
     table_transactions = HealthCommodityTransactionTable(query_transactions)
 
     RequestConfig(request, paginate={'per_page': 50}).configure(table_transactions)
@@ -646,11 +646,17 @@ def get_auth():
         return 'error'
 
 
-def get_data(cookie, startDate, endDate):
+def get_data(cookie, startDate, endDate, program, schedule):
+    # r = requests.get(
+    #     'https://elmis.co.tz/reports/reportdata/facilityConsumption.json?disaggregated=true&facility=&facilityType='
+    #     '&max=10000&pdformat=1&periodEnd='+endDate+'&periodStart='+startDate+'&program=2&zone=437&zoneName='
+    #                                                                          'Tanzania+-+Country',sdasdas
+    #     params={'q': 'requests+language:python'},
+    #     headers={'Cookie': cookie}
+    # )
     r = requests.get(
-        'https://elmis.co.tz/reports/reportdata/facilityConsumption.json?disaggregated=true&facility=&facilityType='
-        '&max=10000&pdformat=1&periodEnd='+endDate+'&periodStart='+startDate+'&program=2&zone=437&zoneName='
-                                                                             'Tanzania+-+Country',
+        'https://elmis.co.tz/reports/reportdata/quantification-extract.json?limit=100&max=2000&page=1&'
+        'periodEnd='+endDate+'&periodStart='+startDate+'&program='+program+'&schedule='+schedule+'',
         params={'q': 'requests+language:python'},
         headers={'Cookie': cookie}
     )
@@ -663,38 +669,41 @@ def get_data(cookie, startDate, endDate):
 
 @background(schedule=60)
 def update_consumption_data_from_elmis():
-    current_date = datetime.today()
-    first_day_of_the_month = current_date.replace(day=1)
-    last_day_of_previous_month = first_day_of_the_month - timedelta(days=1)
-    first_day_of_previous_month = last_day_of_previous_month.replace(day=1)
+    for program in range(1,3):
+        for schedule in range(1,3):
+            current_date = datetime.today()
+            first_day_of_the_month = current_date.replace(day=1)
+            last_day_of_previous_month = first_day_of_the_month - timedelta(days=1)
+            first_day_of_previous_month = last_day_of_previous_month.replace(day=1)
 
-    three_months_before_start_date = str(first_day_of_previous_month.date() - relativedelta(months=3))
-    end_date = str(last_day_of_previous_month.date())
+            three_months_before_start_date = str(first_day_of_previous_month.date() - relativedelta(months=3))
+            end_date = str(last_day_of_previous_month.date())
 
-    consumption_json_data_from_elmis = json.dumps(get_data(cookie, three_months_before_start_date, end_date))
+            consumption_json_data_from_elmis = json.dumps(get_data(cookie, three_months_before_start_date, end_date,
+                                                                   str(program), str(schedule)))
 
-    json_array = json.loads(consumption_json_data_from_elmis)
+            json_array = json.loads(consumption_json_data_from_elmis)
 
-    if json_array["pages"]["total"] > 0:
-        for entry in json_array["pages"]["rows"]:
-            elmis_facility_id = str(entry['facilityId'])
-            elmis_product_id = str(entry['code'])
+            for entry in json_array["openLmisResponse"]["rows"]:
+                if str(entry['facilityCode'] is not None):
+                    elmis_facility_code = str(entry['facilityCode'])
+                    elmis_product_id = str(entry['code'])
 
-            if entry['consumption'] is not None:
-                elmis_average_monthly_consumption = int(entry['consumption'])/3
-            else:
-                elmis_average_monthly_consumption = 0
+                    if entry['consumption'] is not None:
+                        elmis_average_monthly_consumption = int(entry['consumption'])/3
+                    else:
+                        elmis_average_monthly_consumption = 0
 
-            query_commodity_balance = master_data_models.HealthCommodityBalance.objects.filter \
-                (location__elims_facility_id="" + elmis_facility_id + "",
-                 health_commodity__elims_product_id="" + elmis_product_id + "")
+                    query_commodity_balance = master_data_models.HealthCommodityBalance.objects.filter \
+                        (location__elims_facility_id="" + elmis_facility_code + "",
+                         health_commodity__elims_product_id="" + elmis_product_id + "")
 
-            if query_commodity_balance.count() > 0:
-                for y in query_commodity_balance:
-                    y.quantity_consumed = int(elmis_average_monthly_consumption)
-                    y.save()
-            else:
-                pass
+                    if query_commodity_balance.count() > 0:
+                        for y in query_commodity_balance:
+                            y.quantity_consumed = int(elmis_average_monthly_consumption)
+                            y.save()
+                    else:
+                        pass
 
 cookie = 'JSESSIONID=' + get_auth()['JSESSIONID']
 
