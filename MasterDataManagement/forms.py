@@ -26,6 +26,7 @@ class HealthCommodityForm(forms.ModelForm):
                   'track_quantity_expired')
         labels = {
             'has_clients': 'Track if commodity has clients',
+            'track_number_of_patients': 'Track number of clients',
         }
 
 

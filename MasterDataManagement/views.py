@@ -23,6 +23,7 @@ from django.db.models import Q
 from datetime import date
 import datetime
 import xlwt
+import json
 
 
 def get_health_commodity_categories_page(request):
@@ -330,7 +331,26 @@ def get_commodity_facility_mappings_page(request):
     unread_messages = notifications[0]
     scheduled_items = notifications[1]
 
-    locations = master_data_models.Location.objects.filter(parent=request.user.profile.location_id)
+    location_id = request.user.profile.location_id
+    query_locations = master_data_models.Location.objects.all()
+
+    children = []
+
+    facility_ids = []
+
+    for x in query_locations:
+        if x.parent_id == location_id:
+
+            if len((user_management_views.get_children_recursively(x.id))) > 0:
+                children.append(user_management_views.get_children_recursively(x.id))
+            else:
+                facility_ids.append(x.id)
+
+    for y in children:
+        for z in y:
+            facility_ids.append(z['id'])
+
+    locations = master_data_models.Location.objects.filter(id__in=facility_ids)
 
     return render(request, 'MasterDataManagement/CommodityFacilityMappings.html', {
         'table_managed_commodities':table_managed_commodities,

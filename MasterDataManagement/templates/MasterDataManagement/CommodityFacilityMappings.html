@@ -45,7 +45,7 @@
 
                                                         {% endif %}
 
-                                                        {% if request.user.profile.location.location_type == "DST" %}
+                                                        {% if request.user.profile.location.location_type == "DST" or request.user.profile.location.location_type == "RGN" %}
                                                             <button type="button" class="btn btn-success round width-200 buttonAnimation" data-animation="pulse" data-toggle="modal" data-backdrop="static" data-target="#modalFacilitySelector">
                                                                 <i class="la la-plus"></i>New Mapping(s)
                                                             </button>

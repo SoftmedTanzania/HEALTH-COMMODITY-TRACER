@@ -169,7 +169,9 @@ def get_children_recursively(parent_location_id):
 
 def get_parent_child_relationship(request):
     json_data = ""
-    parent_id = request.user.profile.location_id
+    location_id = request.user.profile.location_id
+    query_exact_location = master_data_models.Location.objects.get(id=location_id)
+    parent_id = query_exact_location.parent_id
     query_locations = master_data_models.Location.objects.all()
 
     for x in query_locations:

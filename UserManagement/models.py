@@ -9,7 +9,7 @@ from mptt.models import TreeForeignKey
 # Create your models here.
 class Profile(models.Model):
     def __str__(self):
-        return '%s' % self.user.first_name
+        return '%s' % self.user.id
 
     Female = 'Female'
     Male = 'Male'

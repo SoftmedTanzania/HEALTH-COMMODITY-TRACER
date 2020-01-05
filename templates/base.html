@@ -178,8 +178,6 @@
             <li class=" nav-item"><a href="{% url "dashboard" %}"><i class="mbri-desktop"></i><span class="menu-title" data-i18n="nav.dash.main">Dashboards</span></a>
             </li>
 
-            {% if request.user.profile.location.location_type == "FCT" or request.user.profile.location.location_type == "DST" or request.user.profile.location.location_name == "Tanzania" and request.user.is_superuser  %}
-
                 <li class=" nav-item"><a><i class="mbri-paper-plane"></i><span class="menu-title" data-i18n="nav.category.forms">Post</span></a>
                     <ul class="menu-content">
 
@@ -207,14 +205,13 @@
                         {% endif %}
 
                         </li>
-                        {% if request.user.profile.location.location_type == "FCT" or request.user.profile.location.location_type == "DST" %}
+                        {% if request.user.profile.location.location_type == "FCT" or request.user.profile.location.location_type == "DST" or request.user.profile.location.location_type == "RGN" %}
                             <li><a class="menu-item" href="{% url 'health_commodities_balance' %}"><i class="la icon-directions"></i><span data-i18n="nav.form_repeater.main">Commodity-Facility Mapping </span></a>
                             </li>
                         {% endif %}
                     </ul>
                 </li>
 
-            {% endif %}
 
             <li class=" nav-item"><a href="{% url 'get_messaging_page' %}"><i class="mbri-help"></i><span class="menu-title" data-i18n="nav.support_raise_support.main">Messaging</span></a>
             </li>

@@ -223,7 +223,17 @@ def get_messaging_page(request):
     form_message = ComposeMessageForm()
     form_recipients = MessageRecipientsForm()
 
-    query_users = user_management_models.User.objects.exclude(id=request.user.id)
+    locations = []
+
+    locations_json_array = user_management_views.get_parent_child_relationship(request)
+
+    for x in json.loads(locations_json_array):
+        for y in x['inc']:
+            locations.append(y['id'])
+
+    query_user_profiles = user_management_models.Profile.objects.filter(location__in=locations).exclude(user=request.user.id)
+
+    query_users = user_management_models.User.objects.filter(id__in=query_user_profiles)
 
     query_trashed_messages = master_data_models.MessageRecipient.objects.filter(recipient_id=request.user.id,
                                                                                 is_trashed=True,
