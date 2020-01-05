@@ -172,6 +172,10 @@ def get_parent_child_relationship(request):
     location_id = request.user.profile.location_id
     query_exact_location = master_data_models.Location.objects.get(id=location_id)
     parent_id = query_exact_location.parent_id
+    if parent_id is None:
+        parent_id = location_id
+    else:
+        parent_id = query_exact_location.parent_id
     query_locations = master_data_models.Location.objects.all()
 
     for x in query_locations:
