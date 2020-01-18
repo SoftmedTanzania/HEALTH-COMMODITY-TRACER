@@ -13,8 +13,9 @@ from .serializers import ProfileSerializer, HealthCommoditySerializer, FacilityT
     HealthCommodityTransactionSerializer, \
     UpdatePasswordSerializer, HealthCommodityCategorySerializer, \
     UnitSerializer, PostingScheduleSerializer, HealthCommodityBalanceSerializer, PostingFrequencySerializer, \
-    MessagesSerializer, MessageRecipientsSerializer, UserProfileSerializer, ReceivedMessageSerializer,\
+    MessagesSerializer, MessageRecipientsSerializer, UserProfileSerializer, ReceivedMessageSerializer, \
     UpdateElimsConsumptionSerializer
+import json
 
 
 # Authentication Views
@@ -28,6 +29,36 @@ class UserProfileView(viewsets.ModelViewSet):
     queryset = user_management_models.User.objects.all()
     serializer_class = UserProfileSerializer
     permission_classes = (IsAuthenticated,)
+
+    def list(self, request):
+
+        locations = []
+        facilities = []
+        profiles = []
+
+        locations_json_array = user_management_views.get_parent_child_relationship(request)
+
+        for x in json.loads(locations_json_array):
+            for y in x['inc']:
+                locations.append(y['id'])
+
+        # check if any of the locations has children
+
+        for a in locations:
+            query_check_for_children = master_data_models.Location.objects.filter(parent_id=a)
+
+            if query_check_for_children.count() > 0:
+                for b in query_check_for_children:
+                    locations.append(b.id)
+
+        query_user_profiles = user_management_models.Profile.objects.filter(location__in=locations).exclude(
+            user=request.user.id)
+
+        queryset = user_management_models.User.objects.filter(id__in=query_user_profiles)
+
+        serializer = UserProfileSerializer(queryset, many=True)
+
+        return Response(serializer.data)
 
 
 class UpdatePasswordView(UpdateAPIView):

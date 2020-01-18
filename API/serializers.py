@@ -31,7 +31,7 @@ class TokenSerializer(serializers.ModelSerializer):
 class HealthCommoditySerializer(serializers.ModelSerializer):
     class Meta:
         model = master_data_models.HealthCommodity
-        fields = ('id', 'health_commodity_name', 'description', 'health_commodity_category', 'unit','posting_frequency',
+        fields = ('id', 'health_commodity_name', 'description', 'health_commodity_category', 'unit','posting_frequency','has_clients',
                   'track_number_of_patients', 'track_wastage', 'track_quantity_expired', 'is_active', 'elims_product_id')
 
 

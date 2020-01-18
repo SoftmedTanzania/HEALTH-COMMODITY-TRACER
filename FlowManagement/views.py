@@ -224,6 +224,8 @@ def get_messaging_page(request):
     form_recipients = MessageRecipientsForm()
 
     locations = []
+    facilities = []
+    profiles = []
 
     locations_json_array = user_management_views.get_parent_child_relationship(request)
 
@@ -231,7 +233,17 @@ def get_messaging_page(request):
         for y in x['inc']:
             locations.append(y['id'])
 
-    query_user_profiles = user_management_models.Profile.objects.filter(location__in=locations).exclude(user=request.user.id)
+    # check if any of the locations has children
+
+    for a in locations:
+        query_check_for_children = master_data_models.Location.objects.filter(parent_id=a)
+
+        if query_check_for_children.count() > 0:
+            for b in query_check_for_children:
+                locations.append(b.id)
+
+    query_user_profiles = user_management_models.Profile.objects.filter(location__in=locations).exclude(
+        user=request.user.id)
 
     query_users = user_management_models.User.objects.filter(id__in=query_user_profiles)
 

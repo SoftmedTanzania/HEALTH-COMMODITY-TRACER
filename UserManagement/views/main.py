@@ -183,6 +183,7 @@ def get_parent_child_relationship(request):
             children = get_children_recursively(parent_id)
             if len(children) > 0:
                 json_data = [{"id": x.id, "text": x.location_name, "inc": children}]
+
             else:
                 pass
 
