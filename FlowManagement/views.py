@@ -27,9 +27,9 @@ from dateutil.relativedelta import relativedelta
 elmis_username = 'mkassongo'
 elmis_password = 'Kingdom6'
 elmis_server = 'https://elmis.co.tz/j_spring_security_check'
-hct_username = 'admin'
-hct_password = 'Tracer123$'
-hct_server = 'http://173.255.220.51'
+hct_username = 'danny'
+hct_password = 'admin123'
+hct_server = 'http://74.207.241.230'
 params = {
     'j_username': elmis_username,
     'j_password': elmis_password
@@ -388,7 +388,6 @@ def send_user_a_push_notification(request):
 
             result = push_service.multiple_devices_data_message(registration_ids=registration_ids,
                                                                 data_message=message_payload)
-            print (result)
 
         return redirect(request.META['HTTP_REFERER'])
 
@@ -443,7 +442,6 @@ def send_thread_message(request):
 
         result = push_service.multiple_devices_data_message(registration_ids=registration_ids,
                                                             data_message=message_payload)
-        print(result)
     return redirect(request.META['HTTP_REFERER'])
 
 
@@ -689,9 +687,9 @@ def get_data(cookie, startDate, endDate, program, schedule):
         return 'error'
 
 
-@background(schedule=60)
+@background(schedule=5)
 def update_consumption_data_from_elmis():
-    for program in range(1,3):
+    for program in range(2,3):
         for schedule in range(1,3):
             current_date = datetime.today()
             first_day_of_the_month = current_date.replace(day=1)
@@ -726,6 +724,7 @@ def update_consumption_data_from_elmis():
                             y.save()
                     else:
                         pass
+
 
 cookie = 'JSESSIONID=' + get_auth()['JSESSIONID']
 

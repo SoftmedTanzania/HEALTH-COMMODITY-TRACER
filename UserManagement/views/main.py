@@ -204,8 +204,7 @@ def get_dashboard(request, locations,commodities, date_from, date_to):
             query_total_facilities = master_data_models.Location.objects.filter(location_type='FCT', id__in=locations)
             query_transactions_current_month = master_data_models.HealthCommodityTransactions.objects.filter \
                 (date_time_created__gte=timezone.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0),
-                 posting_schedule__health_commodity_balance__location__in=locations, is_active=True,
-                 quantity_consumed__gt=0)
+                 posting_schedule__health_commodity_balance__location__in=locations, is_active=True)
             if date_from is not None and date_to is not None:
                 if commodities is not None:
                     date_time_from = "" + date_from + ""  # The date - 29 Dec 2017
@@ -220,7 +219,7 @@ def get_dashboard(request, locations,commodities, date_from, date_to):
                     date_to_formatted = date__time_to_formatted.date()
 
                     query_total_transactions = master_data_models.HealthCommodityTransactions.objects.filter \
-                        (posting_schedule__health_commodity_balance__location__in=locations, quantity_consumed__gt=0,
+                        (posting_schedule__health_commodity_balance__location__in=locations,
                          date_time_created__range=(date_from_formatted, date_to_formatted), is_active=True,
                          posting_schedule__health_commodity_balance__health_commodity__in=commodities
                          )
@@ -319,7 +318,7 @@ def get_dashboard(request, locations,commodities, date_from, date_to):
                     date_to_formatted = date__time_to_formatted.date()
 
                     query_total_transactions = master_data_models.HealthCommodityTransactions.objects.filter \
-                        (posting_schedule__health_commodity_balance__location__in=locations, quantity_consumed__gt=0,
+                        (posting_schedule__health_commodity_balance__location__in=locations,
                          date_time_created__range=(date_from_formatted, date_to_formatted), is_active=True
                          )
 
@@ -695,10 +694,10 @@ def get_dashboard(request, locations,commodities, date_from, date_to):
 
                     query_transactions_current_month = master_data_models.HealthCommodityTransactions.objects.filter \
                         (date_time_created__gte=timezone.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0),
-                         posting_schedule__health_commodity_balance__location__in=facility_list,quantity_consumed__gt=0,)
+                         posting_schedule__health_commodity_balance__location__in=facility_list)
 
                     query_total_transactions = master_data_models.HealthCommodityTransactions.objects.filter \
-                        (posting_schedule__health_commodity_balance__location__in=facility_list,quantity_consumed__gt=0,
+                        (posting_schedule__health_commodity_balance__location__in=facility_list,
                          date_time_created__range=(date_from_formatted, date_to_formatted)
                          )
 
@@ -787,14 +786,12 @@ def get_dashboard(request, locations,commodities, date_from, date_to):
             query_transactions_current_month = master_data_models.HealthCommodityTransactions.objects.filter \
                 (date_time_created__gte=timezone.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0),
                  posting_schedule__health_commodity_balance__location__in=facility_list, is_active=True,
-                 quantity_consumed__gt=0, posting_schedule__health_commodity_balance__health_commodity__in=commodities)
+                 posting_schedule__health_commodity_balance__health_commodity__in=commodities)
 
             query_total_transactions = master_data_models.HealthCommodityTransactions.objects.filter \
                 (posting_schedule__health_commodity_balance__health_commodity__in=commodities,
                  posting_schedule__health_commodity_balance__location__in=facility_list
                  )
-
-
 
             aggregated_transactions = master_data_models.HealthCommodityTransactions.objects.filter \
                 (posting_schedule__health_commodity_balance__health_commodity__in=commodities,
@@ -885,10 +882,10 @@ def get_dashboard(request, locations,commodities, date_from, date_to):
                 facility_list = get_facilities_by_user(request).values('id')
 
                 query_total_transactions = master_data_models.HealthCommodityTransactions.objects.filter \
-                    (posting_schedule__health_commodity_balance__location__in=facility_list, is_active=True,quantity_consumed__gt=0)
+                    (posting_schedule__health_commodity_balance__location__in=facility_list, is_active=True)
                 query_transactions_current_month = master_data_models.HealthCommodityTransactions.objects.filter \
                     (date_time_created__gte=timezone.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0),
-                     posting_schedule__health_commodity_balance__location__in=facility_list, is_active=True,quantity_consumed__gt=0)
+                     posting_schedule__health_commodity_balance__location__in=facility_list, is_active=True)
 
                 aggregated_transactions = master_data_models.HealthCommodityTransactions.objects.filter \
                     (posting_schedule__health_commodity_balance__location__in=facility_list, is_active=True,quantity_consumed__gt=0) \
@@ -967,6 +964,7 @@ def get_dashboard(request, locations,commodities, date_from, date_to):
 
 def filter_dashboard(request):
     if request.method == "POST":
+        flow_management_views.update_consumption_data_from_elmis()
         location_array = request.POST["locations"].split(',')
         commodities_array = request.POST["commodities"].split(',')
         date_from = request.POST["date_from"]

@@ -752,11 +752,13 @@
                     $("#dashboard_elements").empty();
 
                     if (date_from != "" && date_to == "") {
-                        swal("Date to Missing", "Date to cannot be empty when Date from has a value.", "warning")
+                        swal("Date to Missing", "Date to cannot be empty when Date from has a value.", "warning");
+                        $("#filter_spinner").hide();
                     }
                     else {
-                        if (date_to < date_from) {
+                        if ( new Date(date_to) < new Date(date_from)) {
                             swal("Wrong Date Range", "Please check date range entered.", "warning");
+                            $("#filter_spinner").hide();
                         }
                         else {
 
